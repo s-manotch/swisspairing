@@ -25,7 +25,7 @@ function normalizeBuffer(input: ArrayBuffer | Uint8Array) {
     return input;
   }
 
-  return input.buffer.slice(input.byteOffset, input.byteOffset + input.byteLength);
+  return Uint8Array.from(input).buffer;
 }
 
 function parseRoundLabel(title: string) {

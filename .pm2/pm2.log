@@ -1,0 +1,70 @@
+2026-04-08T00:37:53: PM2 log: ===============================================================================
+2026-04-08T00:37:53: PM2 log: --- New PM2 Daemon started ----------------------------------------------------
+2026-04-08T00:37:53: PM2 log: Time                 : Wed Apr 08 2026 00:37:53 GMT+0700 (เวลาอินโดจีน)
+2026-04-08T00:37:53: PM2 log: PM2 version          : 6.0.14
+2026-04-08T00:37:53: PM2 log: Node.js version      : 24.14.1
+2026-04-08T00:37:53: PM2 log: Current arch         : x64
+2026-04-08T00:37:53: PM2 log: PM2 home             : d:\VisualCodeForBeginner\TestSwiss\.pm2
+2026-04-08T00:37:53: PM2 log: PM2 PID file         : d:\VisualCodeForBeginner\TestSwiss\.pm2\pm2.pid
+2026-04-08T00:37:53: PM2 log: RPC socket file      : \\.\pipe\rpc.sock
+2026-04-08T00:37:53: PM2 log: BUS socket file      : \\.\pipe\pub.sock
+2026-04-08T00:37:53: PM2 log: Application log path : d:\VisualCodeForBeginner\TestSwiss\.pm2\logs
+2026-04-08T00:37:53: PM2 log: Worker Interval      : 30000
+2026-04-08T00:37:53: PM2 log: Process dump file    : d:\VisualCodeForBeginner\TestSwiss\.pm2\dump.pm2
+2026-04-08T00:37:53: PM2 log: Concurrent actions   : 2
+2026-04-08T00:37:53: PM2 log: SIGTERM timeout      : 1600
+2026-04-08T00:37:53: PM2 log: Runtime Binary       : C:\Program Files\nodejs\node.exe
+2026-04-08T00:37:53: PM2 log: ===============================================================================
+2026-04-08T00:37:53: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:53: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 error: Error caught while calling pidusage
+2026-04-08T00:37:54: PM2 error: Error: No matching pid found
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 error: Error caught while calling pidusage
+2026-04-08T00:37:54: PM2 error: Error: No matching pid found
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] starting in -fork mode-
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] online
+2026-04-08T00:37:54: PM2 log: App [testswiss:0] exited with code [1] via signal [SIGINT]
+2026-04-08T00:37:54: PM2 log: Script C:\Program Files\nodejs\npm.cmd had too many unstable restarts (16). Stopped. "errored"
