@@ -1,6 +1,6 @@
 ﻿import { unstable_noStore as noStore } from "next/cache";
 import { ResultsTabsView } from "@/components/results-tabs-view";
-import { readTournamentResults } from "@/lib/result-store";
+import { readPublicDocuments, readTournamentResults } from "@/lib/result-store";
 import { isTournamentRoundId, tournamentCategories, tournamentRounds } from "@/lib/tournament";
 
 import { ResultsBrowser } from "@/components/results-browser";
@@ -12,6 +12,7 @@ void ResultsBrowserV2;
 export default async function ResultsPage() {
   noStore();
   const results = await readTournamentResults();
+  const publicDocuments = await readPublicDocuments();
   const initialCategoryId =
     tournamentCategories.find((category) => results[category.id])?.id ?? tournamentCategories[0].id;
   const firstRoundKey = Object.keys(results[initialCategoryId]?.rounds ?? {}).sort()[0];
@@ -27,6 +28,7 @@ export default async function ResultsPage() {
     <main className="px-6 py-10 sm:px-8 lg:px-12">
       <ResultsBrowserV3
         results={results}
+        publicDocuments={publicDocuments}
         initialCategoryId={initialCategoryId}
         initialRoundId={initialRoundId}
       />

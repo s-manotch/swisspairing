@@ -5,14 +5,17 @@ import { useMemo, useState } from "react";
 import {
   formatAlignedTextBlock,
   getCategoryDocumentsForRound,
+  getPublicDocumentKindLabel,
   getTournamentCategoryLabel,
   getTournamentDocumentKindLabel,
   getTournamentRoundLabel,
   parsePlayersFromText,
   parseTournamentMatchesFromText,
   parseTournamentStandingsFromText,
+  publicDocumentKinds,
   splitTournamentPerson,
   type Match,
+  type PublicDocument,
   type StandingEntry,
   type StoredTournamentCollection,
   type TournamentCategoryId,
@@ -23,6 +26,7 @@ import {
 
 type ResultsBrowserV3Props = {
   results: StoredTournamentCollection;
+  publicDocuments: Partial<Record<PublicDocument["kind"], PublicDocument>>;
   initialCategoryId: TournamentCategoryId;
   initialRoundId: TournamentRoundId;
 };
@@ -167,6 +171,7 @@ function DocumentImagePreview({
 
 export function ResultsBrowserV3({
   results,
+  publicDocuments,
   initialCategoryId,
   initialRoundId,
 }: ResultsBrowserV3Props) {
@@ -245,14 +250,74 @@ export function ResultsBrowserV3({
     () => tournamentCategories.filter((category) => category.label.includes("ทีม")),
     [],
   );
+  const visiblePublicDocuments = publicDocumentKinds
+    .map((kind) => publicDocuments[kind.id])
+    .filter((document): document is PublicDocument => Boolean(document));
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-5 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสารสำหรับผู้ใช้งานทั่วไป</p>
+            <h2 className="mt-2 font-serif text-2xl text-violet-950">เอกสารสำหรับดาวน์โหลด</h2>
+          </div>
+          <p className="max-w-xl text-sm leading-6 text-violet-900/65">
+            ส่วนนี้ถูกย่อให้กระชับและคงไว้เฉพาะการดาวน์โหลดไฟล์ PDF สำหรับผู้ใช้งานทั่วไป
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {publicDocumentKinds.map((kind) => {
+            const document = publicDocuments[kind.id];
+
+            return (
+              <article
+                key={kind.id}
+                className="rounded-[1.35rem] border border-violet-100 bg-white/85 p-4 shadow-[0_10px_24px_rgba(109,59,209,0.08)]"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">
+                  PDF
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-violet-950">
+                  {getPublicDocumentKindLabel(kind.id)}
+                </h3>
+                {document ? (
+                  <>
+                    <p className="mt-2 line-clamp-2 text-sm text-violet-700/75">
+                      {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <a
+                        href={document.dataUrl}
+                        download={document.sourceFileName}
+                        className="rounded-full border border-violet-700 bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-800"
+                      >
+                        ดาวน์โหลด
+                      </a>
+                    </div>
+                  </>
+                ) : (
+                  <p className="mt-3 text-sm leading-6 text-violet-700/75">
+                    ยังไม่มีไฟล์ PDF ที่เผยแพร่ในหัวข้อนี้
+                  </p>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.14)] backdrop-blur sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">
           ประเภทการแข่งขัน
         </p>
-        <div className="mt-4 grid gap-4">
+        <h2 className="mt-2 font-serif text-3xl text-violet-950 sm:text-4xl">เลือกประเภทที่ต้องการดูผลการแข่งขัน</h2>
+        <p className="mt-3 max-w-3xl text-base leading-7 text-violet-900/70">
+          ส่วนนี้ถูกขยายให้ใช้งานบ่อยได้สะดวกขึ้น คุณสามารถสลับประเภทการแข่งขันและกดไปยังรอบที่ต้องการได้ทันที
+        </p>
+
+        <div className="mt-6 grid gap-5">
           <div>
             <p className="mb-3 text-sm font-semibold text-violet-700">บุคคล</p>
             <div className="flex flex-wrap gap-3">
@@ -260,7 +325,7 @@ export function ResultsBrowserV3({
                 <button
                   key={category.id}
                   className={[
-                    "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                    "rounded-full border px-5 py-3 text-sm font-semibold transition sm:text-base",
                     category.id === activeCategoryId
                       ? "border-violet-700 bg-violet-700 text-white"
                       : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
@@ -280,7 +345,7 @@ export function ResultsBrowserV3({
                 <button
                   key={category.id}
                   className={[
-                    "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                    "rounded-full border px-5 py-3 text-sm font-semibold transition sm:text-base",
                     category.id === activeCategoryId
                       ? "border-violet-700 bg-violet-700 text-white"
                       : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
@@ -303,7 +368,7 @@ export function ResultsBrowserV3({
             <Link
               key={round.id}
               href={`#${activeCategoryId}-${round.id}`}
-              className="rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-800 transition hover:bg-violet-50"
+              className="rounded-full border border-violet-200 bg-white px-5 py-3 text-sm font-semibold text-violet-800 transition hover:bg-violet-50 sm:text-base"
             >
               {round.label}
             </Link>
@@ -311,7 +376,7 @@ export function ResultsBrowserV3({
           {standingsDocuments.length ? (
             <Link
               href={`#${activeCategoryId}-standings`}
-              className="rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-800 transition hover:bg-violet-50"
+              className="rounded-full border border-violet-200 bg-white px-5 py-3 text-sm font-semibold text-violet-800 transition hover:bg-violet-50 sm:text-base"
             >
               Standings
             </Link>
@@ -352,8 +417,8 @@ export function ResultsBrowserV3({
               <p className="mt-2 text-3xl font-bold text-violet-950">{sharedPlayers.length}</p>
             </div>
             <div className="min-w-24 rounded-[1.5rem] border border-white/70 bg-[var(--surface-strong)] px-4 py-5 text-center shadow-[0_12px_30px_rgba(124,58,237,0.12)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">ข้อมูลอื่น</p>
-              <p className="mt-2 text-3xl font-bold text-violet-950">{otherDocuments.length}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">ดาวน์โหลด</p>
+              <p className="mt-2 text-3xl font-bold text-violet-950">{visiblePublicDocuments.length}</p>
             </div>
           </div>
         </div>

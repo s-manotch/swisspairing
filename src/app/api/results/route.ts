@@ -1,5 +1,5 @@
 ﻿import { NextResponse } from "next/server";
-import { readCurrentTournamentData, readTournamentResults } from "@/lib/result-store";
+import { readCurrentTournamentData, readPublicDocuments, readTournamentResults } from "@/lib/result-store";
 import { isTournamentCategoryId, tournamentCategories } from "@/lib/tournament";
 
 export async function GET(request: Request) {
@@ -12,5 +12,6 @@ export async function GET(request: Request) {
   }
 
   const results = await readTournamentResults();
-  return NextResponse.json({ results, categories: tournamentCategories });
+  const publicDocuments = await readPublicDocuments();
+  return NextResponse.json({ results, publicDocuments, categories: tournamentCategories });
 }

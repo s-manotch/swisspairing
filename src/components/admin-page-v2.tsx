@@ -3,10 +3,14 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { TournamentDashboard } from "@/components/tournament-dashboard";
 import {
+  getPublicDocumentKindLabel,
   getCategoryDocumentsForRound,
   getTournamentCategoryLabel,
   getTournamentDocumentKindLabel,
   getTournamentRoundLabel,
+  publicDocumentKinds,
+  type PublicDocument,
+  type PublicDocumentKind,
   type StoredTournamentCollection,
   type TournamentCategoryId,
   type TournamentDocument,
@@ -19,6 +23,11 @@ import {
 type SessionResponse = {
   configured: boolean;
   authenticated: boolean;
+};
+
+type ResultsResponse = {
+  results?: StoredTournamentCollection;
+  publicDocuments?: Partial<Record<PublicDocumentKind, PublicDocument>>;
 };
 
 function readFileAsDataUrl(file: File) {
@@ -51,6 +60,9 @@ export function AdminPageV2() {
   const [error, setError] = useState("");
   const [isBusy, setIsBusy] = useState(false);
   const [results, setResults] = useState<StoredTournamentCollection>({});
+  const [publicDocuments, setPublicDocuments] = useState<
+    Partial<Record<PublicDocumentKind, PublicDocument>>
+  >({});
 
   async function loadSession() {
     const response = await fetch("/api/admin/session", { cache: "no-store" });
@@ -60,8 +72,9 @@ export function AdminPageV2() {
 
   async function loadResults() {
     const response = await fetch("/api/results", { cache: "no-store" });
-    const json = (await response.json()) as { results?: StoredTournamentCollection };
+    const json = (await response.json()) as ResultsResponse;
     setResults(json.results ?? {});
+    setPublicDocuments(json.publicDocuments ?? {});
   }
 
   useEffect(() => {
@@ -198,6 +211,61 @@ export function AdminPageV2() {
     }
   }
 
+  async function handlePublicDocumentUpload(
+    kind: PublicDocumentKind,
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (file.type !== "application/pdf") {
+      setError(`ไฟล์สำหรับ ${getPublicDocumentKindLabel(kind)} ต้องเป็น PDF เท่านั้น`);
+      event.target.value = "";
+      return;
+    }
+
+    setIsBusy(true);
+    setError("");
+    setStatus("");
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      const updatedAt = new Date().toISOString();
+      const title = file.name.replace(/\.[^.]+$/, "") || getPublicDocumentKindLabel(kind);
+
+      const response = await fetch("/api/admin/public-documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          document: {
+            kind,
+            title,
+            sourceFileName: file.name,
+            updatedAt,
+            dataUrl,
+          } satisfies PublicDocument,
+        }),
+      });
+
+      const json = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(json.error ?? "อัปโหลดไฟล์ PDF ไม่สำเร็จ");
+      }
+
+      setStatus(`อัปโหลด ${getPublicDocumentKindLabel(kind)} เรียบร้อยแล้ว`);
+      await loadResults();
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "อัปโหลดไฟล์ PDF ไม่สำเร็จ");
+    } finally {
+      event.target.value = "";
+      setIsBusy(false);
+    }
+  }
+
   async function handleDeleteDocument(documentId: string) {
     setIsBusy(true);
     setError("");
@@ -224,6 +292,33 @@ export function AdminPageV2() {
       await loadResults();
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "ลบไฟล์ไม่สำเร็จ");
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  async function handleDeletePublicDocument(kind: PublicDocumentKind) {
+    setIsBusy(true);
+    setError("");
+    setStatus("");
+
+    try {
+      const response = await fetch("/api/admin/public-documents", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind }),
+      });
+
+      const json = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(json.error ?? "ลบไฟล์ PDF ไม่สำเร็จ");
+      }
+
+      setStatus(`ลบ ${getPublicDocumentKindLabel(kind)} เรียบร้อยแล้ว`);
+      await loadResults();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "ลบไฟล์ PDF ไม่สำเร็จ");
     } finally {
       setIsBusy(false);
     }
@@ -493,6 +588,81 @@ export function AdminPageV2() {
             รอบนี้ยังไม่มีไฟล์ที่อัปโหลด
           </div>
         )}
+      </section>
+
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสาร PDF ส่วนกลาง</p>
+        <h2 className="mt-2 font-serif text-3xl text-violet-950">ระเบียบการแข่งขัน สูจิบัติ และกำหนดการแข่งขัน</h2>
+        <p className="mt-4 max-w-3xl text-violet-900/70">
+          ทั้ง 3 ช่องนี้ใช้สำหรับอัปโหลดไฟล์ PDF ให้ผู้ใช้งานทั่วไปกดดาวน์โหลดจากหน้าสาธารณะได้โดยตรง
+        </p>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          {publicDocumentKinds.map((kind) => {
+            const document = publicDocuments[kind.id];
+
+            return (
+              <article
+                key={kind.id}
+                className="rounded-[1.5rem] border border-violet-100 bg-white/80 p-5"
+              >
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                  PDF Upload
+                </p>
+                <h3 className="mt-2 text-xl font-semibold text-violet-950">
+                  {getPublicDocumentKindLabel(kind.id)}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-violet-700/75">
+                  อัปโหลดได้เฉพาะไฟล์ `.pdf` และไฟล์ใหม่จะถูกใช้แทนไฟล์เดิมของหัวข้อนี้
+                </p>
+
+                <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-violet-300 bg-violet-50/40 px-4 py-6 text-center transition hover:border-violet-500 hover:bg-white">
+                  <span className="text-sm font-semibold text-violet-700">เลือกไฟล์ PDF</span>
+                  <span className="mt-2 text-xs text-violet-700/70">
+                    คลิกเพื่ออัปโหลด {getPublicDocumentKindLabel(kind.id)}
+                  </span>
+                  <input
+                    className="sr-only"
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    onChange={(event) => void handlePublicDocumentUpload(kind.id, event)}
+                    disabled={isBusy}
+                  />
+                </label>
+
+                {document ? (
+                  <div className="mt-5 rounded-[1.25rem] border border-violet-100 bg-violet-50/50 p-4">
+                    <p className="text-sm font-semibold text-violet-950">{document.sourceFileName}</p>
+                    <p className="mt-2 text-sm text-violet-700/75">
+                      อัปเดตล่าสุด {new Date(document.updatedAt).toLocaleString("th-TH")}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <a
+                        href={document.dataUrl}
+                        download={document.sourceFileName}
+                        className="rounded-full border border-violet-200 px-4 py-2 text-sm font-semibold text-violet-800 transition hover:bg-white"
+                      >
+                        ดาวน์โหลดไฟล์ปัจจุบัน
+                      </a>
+                      <button
+                        className="rounded-full border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        type="button"
+                        onClick={() => void handleDeletePublicDocument(kind.id)}
+                        disabled={isBusy}
+                      >
+                        ลบไฟล์นี้
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-5 rounded-[1.25rem] border border-dashed border-violet-200 bg-white/60 px-4 py-6 text-center text-sm text-violet-700/75">
+                    ยังไม่มีไฟล์ PDF ในหัวข้อนี้
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
       </section>
 
       <TournamentDashboard

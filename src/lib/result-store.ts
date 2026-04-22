@@ -5,6 +5,9 @@ import path from "node:path";
 import {
   getRoundIdFromRoundNumber,
   getTournamentRoundLabel,
+  isPublicDocumentKind,
+  type PublicDocument,
+  type PublicDocumentKind,
   type TournamentCategoryRecord,
   type TournamentDocument,
   type TournamentRoundId,
@@ -15,6 +18,7 @@ import {
 
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "current-results.json");
+const publicDocumentsFile = path.join(dataDir, "public-documents.json");
 const defaultCategoryId: TournamentCategoryId = "type-1";
 
 function isStoredTournamentData(value: unknown): value is StoredTournamentData {
@@ -85,6 +89,24 @@ function isTournamentCategoryRecord(value: unknown): value is TournamentCategory
         record.documents.every((document) => isTournamentDocument(document)),
     );
   });
+}
+
+function isPublicDocument(value: unknown): value is PublicDocument {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const payload = value as Record<string, unknown>;
+
+  return Boolean(
+    payload.kind &&
+      typeof payload.kind === "string" &&
+      isPublicDocumentKind(payload.kind) &&
+      payload.title &&
+      payload.sourceFileName &&
+      payload.updatedAt &&
+      typeof payload.dataUrl === "string",
+  );
 }
 
 function isLegacyTournamentCategoryRecord(value: unknown) {
@@ -259,6 +281,55 @@ export async function writeTournamentDocuments(
 
   await mkdir(dataDir, { recursive: true });
   await writeFile(dataFile, JSON.stringify(nextResults, null, 2), "utf8");
+}
+
+export async function readPublicDocuments() {
+  try {
+    const raw = await readFile(publicDocumentsFile, "utf8");
+    const parsed = JSON.parse(raw);
+
+    if (!parsed || typeof parsed !== "object") {
+      return {} as Partial<Record<PublicDocumentKind, PublicDocument>>;
+    }
+
+    const entries = Object.entries(parsed as Record<string, unknown>).flatMap(([key, value]) => {
+      if (isPublicDocument(value) && value.kind === key) {
+        return [[key, value] as const];
+      }
+
+      return [];
+    });
+
+    return Object.fromEntries(entries) as Partial<Record<PublicDocumentKind, PublicDocument>>;
+  } catch {
+    return {};
+  }
+}
+
+export async function writePublicDocument(document: PublicDocument) {
+  const currentDocuments = await readPublicDocuments();
+  const nextDocuments = {
+    ...currentDocuments,
+    [document.kind]: document,
+  };
+
+  await mkdir(dataDir, { recursive: true });
+  await writeFile(publicDocumentsFile, JSON.stringify(nextDocuments, null, 2), "utf8");
+}
+
+export async function deletePublicDocument(kind: PublicDocumentKind) {
+  const currentDocuments = await readPublicDocuments();
+
+  if (!currentDocuments[kind]) {
+    return false;
+  }
+
+  const nextDocuments = { ...currentDocuments };
+  delete nextDocuments[kind];
+
+  await mkdir(dataDir, { recursive: true });
+  await writeFile(publicDocumentsFile, JSON.stringify(nextDocuments, null, 2), "utf8");
+  return true;
 }
 
 export async function deleteTournamentDocument(

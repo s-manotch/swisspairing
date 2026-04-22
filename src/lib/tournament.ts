@@ -63,9 +63,16 @@ export const tournamentDocumentKinds = [
   { id: "other", label: "ข้อมูลอื่น ๆ" },
 ] as const;
 
+export const publicDocumentKinds = [
+  { id: "regulations", label: "ระเบียบการแข่งขัน" },
+  { id: "handbook", label: "สูจิบัติ" },
+  { id: "schedule", label: "กำหนดการแข่งขัน" },
+] as const;
+
 export type TournamentCategoryId = (typeof tournamentCategories)[number]["id"];
 export type TournamentRoundId = (typeof tournamentRounds)[number]["id"];
 export type TournamentDocumentKind = (typeof tournamentDocumentKinds)[number]["id"];
+export type PublicDocumentKind = (typeof publicDocumentKinds)[number]["id"];
 
 export type TournamentDocument = {
   id: string;
@@ -76,6 +83,14 @@ export type TournamentDocument = {
   contentText: string;
   imageDataUrl: string | null;
   parsedData: StoredTournamentData | null;
+};
+
+export type PublicDocument = {
+  kind: PublicDocumentKind;
+  title: string;
+  sourceFileName: string;
+  updatedAt: string;
+  dataUrl: string;
 };
 
 export type TournamentRoundRecord = {
@@ -116,6 +131,14 @@ export function isTournamentDocumentKind(value: string): value is TournamentDocu
 
 export function getTournamentDocumentKindLabel(kind: TournamentDocumentKind) {
   return tournamentDocumentKinds.find((item) => item.id === kind)?.label ?? kind;
+}
+
+export function isPublicDocumentKind(value: string): value is PublicDocumentKind {
+  return publicDocumentKinds.some((kind) => kind.id === value);
+}
+
+export function getPublicDocumentKindLabel(kind: PublicDocumentKind) {
+  return publicDocumentKinds.find((item) => item.id === kind)?.label ?? kind;
 }
 
 export function getRoundIdFromRoundNumber(roundNumber: number): TournamentRoundId {
