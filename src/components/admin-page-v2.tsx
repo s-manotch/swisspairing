@@ -30,6 +30,40 @@ type ResultsResponse = {
   publicDocuments?: Partial<Record<PublicDocumentKind, PublicDocument>>;
 };
 
+function removeDocumentFromResults(
+  currentResults: StoredTournamentCollection,
+  categoryId: TournamentCategoryId,
+  roundId: TournamentRoundId,
+  documentId: string,
+) {
+  const category = currentResults[categoryId];
+
+  if (!category) {
+    return currentResults;
+  }
+
+  const nextSharedDocuments = category.sharedDocuments.filter((document) => document.id !== documentId);
+  const currentRound = category.rounds[roundId];
+  const nextRound = currentRound
+    ? {
+        ...currentRound,
+        documents: currentRound.documents.filter((document) => document.id !== documentId),
+      }
+    : undefined;
+
+  return {
+    ...currentResults,
+    [categoryId]: {
+      ...category,
+      sharedDocuments: nextSharedDocuments,
+      rounds: {
+        ...category.rounds,
+        ...(nextRound ? { [roundId]: nextRound } : {}),
+      },
+    },
+  };
+}
+
 async function readJsonSafely(response: Response) {
   const text = await response.text();
 
@@ -304,8 +338,18 @@ export function AdminPageV2() {
         throw new Error(json.error ?? "ลบไฟล์ไม่สำเร็จ");
       }
 
+      setResults((currentResults) =>
+        removeDocumentFromResults(
+          currentResults,
+          selectedCategoryId,
+          selectedRoundId,
+          documentId,
+        ),
+      );
       setStatus("ลบไฟล์รูปภาพออกจากรายการเรียบร้อยแล้ว");
-      await loadResults();
+      window.setTimeout(() => {
+        void loadResults();
+      }, 800);
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "ลบไฟล์ไม่สำเร็จ");
     } finally {
@@ -331,8 +375,15 @@ export function AdminPageV2() {
         throw new Error(json.error ?? "ลบไฟล์ PDF ไม่สำเร็จ");
       }
 
+      setPublicDocuments((currentDocuments) => {
+        const nextDocuments = { ...currentDocuments };
+        delete nextDocuments[kind];
+        return nextDocuments;
+      });
       setStatus(`ลบ ${getPublicDocumentKindLabel(kind)} เรียบร้อยแล้ว`);
-      await loadResults();
+      window.setTimeout(() => {
+        void loadResults();
+      }, 800);
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "ลบไฟล์ PDF ไม่สำเร็จ");
     } finally {
