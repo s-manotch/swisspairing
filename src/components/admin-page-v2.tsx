@@ -30,6 +30,22 @@ type ResultsResponse = {
   publicDocuments?: Partial<Record<PublicDocumentKind, PublicDocument>>;
 };
 
+async function readJsonSafely(response: Response) {
+  const text = await response.text();
+
+  if (!text.trim()) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text) as { error?: string };
+  } catch {
+    return {
+      error: response.ok ? "ระบบตอบกลับไม่ถูกต้อง" : `เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง (${response.status})`,
+    };
+  }
+}
+
 function readFileAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -187,7 +203,7 @@ export function AdminPageV2() {
         }),
       });
 
-      const json = (await response.json()) as { error?: string };
+      const json = await readJsonSafely(response);
 
       if (!response.ok) {
         throw new Error(json.error ?? "บันทึกข้อมูลไม่สำเร็จ");
@@ -250,7 +266,7 @@ export function AdminPageV2() {
         }),
       });
 
-      const json = (await response.json()) as { error?: string };
+      const json = await readJsonSafely(response);
 
       if (!response.ok) {
         throw new Error(json.error ?? "อัปโหลดไฟล์ PDF ไม่สำเร็จ");
@@ -282,7 +298,7 @@ export function AdminPageV2() {
         }),
       });
 
-      const json = (await response.json()) as { error?: string };
+      const json = await readJsonSafely(response);
 
       if (!response.ok) {
         throw new Error(json.error ?? "ลบไฟล์ไม่สำเร็จ");
@@ -309,7 +325,7 @@ export function AdminPageV2() {
         body: JSON.stringify({ kind }),
       });
 
-      const json = (await response.json()) as { error?: string };
+      const json = await readJsonSafely(response);
 
       if (!response.ok) {
         throw new Error(json.error ?? "ลบไฟล์ PDF ไม่สำเร็จ");

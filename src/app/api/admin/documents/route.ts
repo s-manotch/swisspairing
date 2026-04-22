@@ -16,32 +16,37 @@ type DeletePayload = {
 };
 
 export async function DELETE(request: Request) {
-  const cookieStore = await cookies();
-  const session = cookieStore.get(adminSessionCookie)?.value;
+  try {
+    const cookieStore = await cookies();
+    const session = cookieStore.get(adminSessionCookie)?.value;
 
-  if (!isAdminAuthorized(session)) {
-    return NextResponse.json({ error: "ไม่ได้รับอนุญาต" }, { status: 401 });
+    if (!isAdminAuthorized(session)) {
+      return NextResponse.json({ error: "ไม่ได้รับอนุญาต" }, { status: 401 });
+    }
+
+    const payload = (await request.json()) as DeletePayload;
+
+    if (
+      !isTournamentCategoryId(payload?.categoryId) ||
+      !isTournamentRoundId(payload?.roundId) ||
+      !payload?.documentId
+    ) {
+      return NextResponse.json({ error: "ข้อมูลที่ส่งมาไม่ถูกต้อง" }, { status: 400 });
+    }
+
+    const deleted = await deleteTournamentDocument(
+      payload.categoryId,
+      payload.roundId,
+      payload.documentId,
+    );
+
+    if (!deleted) {
+      return NextResponse.json({ error: "ไม่พบไฟล์ที่ต้องการลบ" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "ลบไฟล์ไม่สำเร็จ";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const payload = (await request.json()) as DeletePayload;
-
-  if (
-    !isTournamentCategoryId(payload?.categoryId) ||
-    !isTournamentRoundId(payload?.roundId) ||
-    !payload?.documentId
-  ) {
-    return NextResponse.json({ error: "ข้อมูลที่ส่งมาไม่ถูกต้อง" }, { status: 400 });
-  }
-
-  const deleted = await deleteTournamentDocument(
-    payload.categoryId,
-    payload.roundId,
-    payload.documentId,
-  );
-
-  if (!deleted) {
-    return NextResponse.json({ error: "ไม่พบไฟล์ที่ต้องการลบ" }, { status: 404 });
-  }
-
-  return NextResponse.json({ success: true });
 }

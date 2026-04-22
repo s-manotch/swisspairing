@@ -37,40 +37,50 @@ async function ensureAdminAuthorized() {
 }
 
 export async function POST(request: Request) {
-  const unauthorizedResponse = await ensureAdminAuthorized();
+  try {
+    const unauthorizedResponse = await ensureAdminAuthorized();
 
-  if (unauthorizedResponse) {
-    return unauthorizedResponse;
+    if (unauthorizedResponse) {
+      return unauthorizedResponse;
+    }
+
+    const payload = (await request.json()) as UploadPayload;
+
+    if (!isValidPublicDocument(payload?.document)) {
+      return NextResponse.json({ error: "ข้อมูลที่ส่งมาไม่ถูกต้อง" }, { status: 400 });
+    }
+
+    await writePublicDocument(payload.document);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "อัปโหลดไฟล์ PDF ไม่สำเร็จ";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const payload = (await request.json()) as UploadPayload;
-
-  if (!isValidPublicDocument(payload?.document)) {
-    return NextResponse.json({ error: "ข้อมูลที่ส่งมาไม่ถูกต้อง" }, { status: 400 });
-  }
-
-  await writePublicDocument(payload.document);
-  return NextResponse.json({ success: true });
 }
 
 export async function DELETE(request: Request) {
-  const unauthorizedResponse = await ensureAdminAuthorized();
+  try {
+    const unauthorizedResponse = await ensureAdminAuthorized();
 
-  if (unauthorizedResponse) {
-    return unauthorizedResponse;
+    if (unauthorizedResponse) {
+      return unauthorizedResponse;
+    }
+
+    const payload = (await request.json()) as DeletePayload;
+
+    if (!isPublicDocumentKind(payload?.kind)) {
+      return NextResponse.json({ error: "ข้อมูลที่ส่งมาไม่ถูกต้อง" }, { status: 400 });
+    }
+
+    const deleted = await deletePublicDocument(payload.kind);
+
+    if (!deleted) {
+      return NextResponse.json({ error: "ไม่พบไฟล์ที่ต้องการลบ" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "ลบไฟล์ PDF ไม่สำเร็จ";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const payload = (await request.json()) as DeletePayload;
-
-  if (!isPublicDocumentKind(payload?.kind)) {
-    return NextResponse.json({ error: "ข้อมูลที่ส่งมาไม่ถูกต้อง" }, { status: 400 });
-  }
-
-  const deleted = await deletePublicDocument(payload.kind);
-
-  if (!deleted) {
-    return NextResponse.json({ error: "ไม่พบไฟล์ที่ต้องการลบ" }, { status: 404 });
-  }
-
-  return NextResponse.json({ success: true });
 }
