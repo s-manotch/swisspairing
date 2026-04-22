@@ -1,6 +1,6 @@
 ﻿import "server-only";
 
-import { getDeployStore, getStore } from "@netlify/blobs";
+import { getStore } from "@netlify/blobs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -242,11 +242,7 @@ function getPersistentStore() {
   }
 
   try {
-    if (process.env.CONTEXT === "production") {
-      return getStore(blobStoreName, { consistency: "strong" });
-    }
-
-    return getDeployStore(blobStoreName);
+    return getStore(blobStoreName, { consistency: "strong" });
   } catch {
     return null;
   }
