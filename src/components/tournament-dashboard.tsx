@@ -1,7 +1,11 @@
 ﻿import { StoredTournamentData } from "@/lib/tournament";
 
+import { type TournamentDocument } from "@/lib/tournament";
+
 type TournamentDashboardProps = {
   data: StoredTournamentData | null;
+  players?: string[];
+  resultDocuments?: TournamentDocument[];
   statusLabel: string;
   emptyTitle: string;
   emptyDescription: string;
@@ -9,13 +13,16 @@ type TournamentDashboardProps = {
 
 export function TournamentDashboard({
   data,
+  players,
+  resultDocuments = [],
   statusLabel,
   emptyTitle,
   emptyDescription,
 }: TournamentDashboardProps) {
+  const visiblePlayers = players ?? data?.players ?? [];
   const summary = [
     { label: "รอบ", value: data?.roundLabel ?? "-" },
-    { label: "ผู้เล่น", value: data ? String(data.players.length) : "-" },
+    { label: "ผู้เล่น", value: String(visiblePlayers.length || 0) },
     { label: "กระดาน", value: data ? String(data.matches.length) : "-" },
   ];
 
@@ -68,37 +75,58 @@ export function TournamentDashboard({
             </span>
           </div>
 
-          {data ? (
+          {data || resultDocuments.length ? (
             <div className="grid gap-4">
-              {data.matches.map((match) => (
+              {data
+                ? data.matches.map((match) => (
+                    <article
+                      key={`${match.board}-${match.leftName}-${match.rightName}`}
+                      className="rounded-[1.5rem] border border-violet-100 bg-white/80 p-5 shadow-[0_10px_28px_rgba(109,59,209,0.08)]"
+                    >
+                      <div className="mb-4 flex items-center justify-between gap-4">
+                        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                          Board {match.board}
+                        </p>
+                        <p className="rounded-full bg-violet-600 px-3 py-1 text-sm font-semibold text-white">
+                          {match.result}
+                        </p>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+                        <div>
+                          <p className="text-lg font-semibold text-violet-950">{match.leftName}</p>
+                          <p className="text-sm text-violet-700/70">คะแนนก่อนแข่ง {match.leftScore}</p>
+                        </div>
+                        <div className="justify-self-center rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
+                          พบกับ
+                        </div>
+                        <div className="sm:text-right">
+                          <p className="text-lg font-semibold text-violet-950">{match.rightName}</p>
+                          <p className="text-sm text-violet-700/70">คะแนนก่อนแข่ง {match.rightScore}</p>
+                        </div>
+                      </div>
+                      <p className="mt-4 text-sm text-violet-900/75">
+                        ผู้ชนะ: <span className="font-semibold text-violet-950">{match.winner}</span>
+                      </p>
+                    </article>
+                  ))
+                : null}
+              {resultDocuments.map((document) => (
                 <article
-                  key={`${match.board}-${match.leftName}-${match.rightName}`}
+                  key={document.id}
                   className="rounded-[1.5rem] border border-violet-100 bg-white/80 p-5 shadow-[0_10px_28px_rgba(109,59,209,0.08)]"
                 >
-                  <div className="mb-4 flex items-center justify-between gap-4">
-                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
-                      Board {match.board}
-                    </p>
-                    <p className="rounded-full bg-violet-600 px-3 py-1 text-sm font-semibold text-white">
-                      {match.result}
-                    </p>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+                  <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-lg font-semibold text-violet-950">{match.leftName}</p>
-                      <p className="text-sm text-violet-700/70">คะแนนก่อนแข่ง {match.leftScore}</p>
+                      <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                        ไฟล์ผลการแข่งขัน
+                      </p>
+                      <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
                     </div>
-                    <div className="justify-self-center rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
-                      พบกับ
-                    </div>
-                    <div className="sm:text-right">
-                      <p className="text-lg font-semibold text-violet-950">{match.rightName}</p>
-                      <p className="text-sm text-violet-700/70">คะแนนก่อนแข่ง {match.rightScore}</p>
-                    </div>
+                    <p className="text-sm text-violet-700/75">{document.sourceFileName}</p>
                   </div>
-                  <p className="mt-4 text-sm text-violet-900/75">
-                    ผู้ชนะ: <span className="font-semibold text-violet-950">{match.winner}</span>
-                  </p>
+                  <pre className="overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-violet-50/80 p-4 text-sm leading-7 text-violet-950">
+                    {document.contentText || "ไม่มีข้อความในไฟล์ผลการแข่งขัน"}
+                  </pre>
                 </article>
               ))}
             </div>
@@ -113,9 +141,9 @@ export function TournamentDashboard({
           <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">ผู้เล่น</p>
             <h2 className="mt-2 font-serif text-3xl text-violet-950">รายชื่อผู้เล่น</h2>
-            {data ? (
+            {visiblePlayers.length ? (
               <div className="mt-6 grid gap-3">
-                {data.players.map((player, index) => (
+                {visiblePlayers.map((player, index) => (
                   <div
                     key={`${player}-${index}`}
                     className="flex items-center gap-4 rounded-[1.25rem] border border-violet-100 bg-white/80 px-4 py-3"

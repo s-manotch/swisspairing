@@ -4,8 +4,13 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { TournamentDashboard } from "@/components/tournament-dashboard";
 import {
   decodeTournamentFile,
+  getTournamentCategoryLabel,
+  getLatestParsedTournamentData,
   parseTournamentHtml,
+  type StoredTournamentCollection,
+  type TournamentCategoryId,
   type StoredTournamentData,
+  tournamentCategories,
 } from "@/lib/tournament";
 
 type SessionResponse = {
@@ -15,12 +20,13 @@ type SessionResponse = {
 
 export function AdminPage() {
   const [session, setSession] = useState<SessionResponse | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<TournamentCategoryId>("type-1");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [isBusy, setIsBusy] = useState(false);
-  const [data, setData] = useState<StoredTournamentData | null>(null);
+  const [results, setResults] = useState<StoredTournamentCollection>({});
 
   async function loadSession() {
     const response = await fetch("/api/admin/session", { cache: "no-store" });
@@ -30,8 +36,8 @@ export function AdminPage() {
 
   async function loadResults() {
     const response = await fetch("/api/results", { cache: "no-store" });
-    const json = (await response.json()) as { data: StoredTournamentData | null };
-    setData(json.data);
+    const json = (await response.json()) as { results?: StoredTournamentCollection };
+    setResults(json.results ?? {});
   }
 
   useEffect(() => {
@@ -39,13 +45,16 @@ export function AdminPage() {
     void loadResults();
   }, []);
 
+  const category = results[selectedCategoryId] ?? null;
+  const data = getLatestParsedTournamentData(category);
+
   const statusLabel = useMemo(() => {
     if (!data) {
-      return "ยังไม่มีข้อมูลที่เผยแพร่";
+      return `${getTournamentCategoryLabel(selectedCategoryId)} ยังไม่มีข้อมูลที่เผยแพร่`;
     }
 
-    return `เผยแพร่จาก ${data.sourceFileName}`;
-  }, [data]);
+    return `${getTournamentCategoryLabel(selectedCategoryId)} • เผยแพร่จาก ${data.sourceFileName}`;
+  }, [data, selectedCategoryId]);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,7 +114,7 @@ export function AdminPage() {
       const response = await fetch("/api/admin/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ categoryId: selectedCategoryId, data: payload }),
       });
 
       const json = (await response.json()) as { error?: string };
@@ -114,8 +123,9 @@ export function AdminPage() {
         throw new Error(json.error ?? "บันทึกข้อมูลไม่สำเร็จ");
       }
 
-      setData(payload);
-      setStatus("อัปเดตผลการแข่งขันเรียบร้อยแล้ว");
+      setStatus(
+        `อัปเดตผลการแข่งขัน ${getTournamentCategoryLabel(selectedCategoryId)} เรียบร้อยแล้ว`,
+      );
       await loadResults();
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "อัปโหลดไฟล์ไม่สำเร็จ");
@@ -203,9 +213,35 @@ export function AdminPage() {
         <p className="mt-4 text-sm leading-7 text-violet-950/75">
           รองรับไฟล์ผลการแข่งขันรูปแบบ Swiss Perfect เมื่ออัปโหลดสำเร็จ หน้า public จะเห็นข้อมูลล่าสุดทันที
         </p>
+        <div className="mt-6">
+          <label className="mb-3 block text-sm font-semibold text-violet-900">ประเภทการแข่งขัน</label>
+          <div className="flex flex-wrap gap-3">
+            {tournamentCategories.map((category) => {
+              const isActive = category.id === selectedCategoryId;
+
+              return (
+                <button
+                  key={category.id}
+                  className={[
+                    "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                    isActive
+                      ? "border-violet-700 bg-violet-700 text-white"
+                      : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                  ].join(" ")}
+                  type="button"
+                  onClick={() => setSelectedCategoryId(category.id)}
+                >
+                  {category.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-violet-300 bg-white/75 px-6 py-8 text-center transition hover:border-violet-500 hover:bg-white">
           <span className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">เลือกไฟล์</span>
-          <span className="mt-3 font-serif text-2xl text-violet-950">อัปโหลดผลการแข่งขันใหม่</span>
+          <span className="mt-3 font-serif text-2xl text-violet-950">
+            อัปโหลดผลการแข่งขันใหม่สำหรับ {getTournamentCategoryLabel(selectedCategoryId)}
+          </span>
           <span className="mt-3 text-sm text-violet-900/65">เฉพาะแอดมินเท่านั้นที่อัปเดตข้อมูลได้</span>
           <input
             className="sr-only"
@@ -222,8 +258,8 @@ export function AdminPage() {
       <TournamentDashboard
         data={data}
         statusLabel={statusLabel}
-        emptyTitle="ยังไม่มีผลการแข่งขันที่เผยแพร่"
-        emptyDescription="เมื่อคุณอัปโหลดและบันทึกไฟล์จากหน้านี้แล้ว รายการล่าสุดจะไปแสดงที่หน้าสาธารณะโดยอัตโนมัติ"
+        emptyTitle={`ยังไม่มีผลการแข่งขัน ${getTournamentCategoryLabel(selectedCategoryId)} ที่เผยแพร่`}
+        emptyDescription="เมื่อคุณอัปโหลดและบันทึกไฟล์ของประเภทที่เลือกจากหน้านี้แล้ว รายการล่าสุดจะไปแสดงที่หน้าสาธารณะโดยอัตโนมัติ"
       />
     </div>
   );
