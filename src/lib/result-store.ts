@@ -227,7 +227,13 @@ function normalizeStoredResults(value: unknown): StoredTournamentCollection {
 }
 
 function isRunningOnNetlify() {
-  return process.env.NETLIFY === "true";
+  return Boolean(
+    process.env.NETLIFY ||
+      process.env.SITE_ID ||
+      process.env.DEPLOY_ID ||
+      process.env.CONTEXT ||
+      process.env.URL,
+  );
 }
 
 function getPersistentStore() {
@@ -235,11 +241,15 @@ function getPersistentStore() {
     return null;
   }
 
-  if (process.env.CONTEXT === "production") {
-    return getStore(blobStoreName, { consistency: "strong" });
-  }
+  try {
+    if (process.env.CONTEXT === "production") {
+      return getStore(blobStoreName, { consistency: "strong" });
+    }
 
-  return getDeployStore(blobStoreName);
+    return getDeployStore(blobStoreName);
+  } catch {
+    return null;
+  }
 }
 
 async function readLocalResultsFile() {
@@ -286,14 +296,24 @@ async function writeLocalPublicDocumentsFile(
   await writeFile(publicDocumentsFile, JSON.stringify(documents, null, 2), "utf8");
 }
 
+function ensureWritableFallbackAvailable() {
+  if (isRunningOnNetlify()) {
+    throw new Error("Netlify Blob storage is not available in this environment");
+  }
+}
+
 export async function readTournamentResults() {
   const store = getPersistentStore();
 
   if (store) {
-    const blobResults = await store.get(resultsBlobKey, { type: "json" });
+    try {
+      const blobResults = await store.get(resultsBlobKey, { type: "json" });
 
-    if (blobResults) {
-      return normalizeStoredResults(blobResults);
+      if (blobResults) {
+        return normalizeStoredResults(blobResults);
+      }
+    } catch {
+      // Fall back to local file reads outside Netlify Blob-enabled environments.
     }
   }
 
@@ -351,10 +371,15 @@ export async function writeTournamentDocuments(
   const store = getPersistentStore();
 
   if (store) {
-    await store.setJSON(resultsBlobKey, nextResults);
-    return;
+    try {
+      await store.setJSON(resultsBlobKey, nextResults);
+      return;
+    } catch {
+      // Fall back to local writes only when Blob storage is unavailable.
+    }
   }
 
+  ensureWritableFallbackAvailable();
   await writeLocalResultsFile(nextResults);
 }
 
@@ -362,18 +387,22 @@ export async function readPublicDocuments() {
   const store = getPersistentStore();
 
   if (store) {
-    const blobDocuments = await store.get(publicDocumentsBlobKey, { type: "json" });
+    try {
+      const blobDocuments = await store.get(publicDocumentsBlobKey, { type: "json" });
 
-    if (blobDocuments && typeof blobDocuments === "object") {
-      const entries = Object.entries(blobDocuments as Record<string, unknown>).flatMap(([key, value]) => {
-        if (isPublicDocument(value) && value.kind === key) {
-          return [[key, value] as const];
-        }
+      if (blobDocuments && typeof blobDocuments === "object") {
+        const entries = Object.entries(blobDocuments as Record<string, unknown>).flatMap(([key, value]) => {
+          if (isPublicDocument(value) && value.kind === key) {
+            return [[key, value] as const];
+          }
 
-        return [];
-      });
+          return [];
+        });
 
-      return Object.fromEntries(entries) as Partial<Record<PublicDocumentKind, PublicDocument>>;
+        return Object.fromEntries(entries) as Partial<Record<PublicDocumentKind, PublicDocument>>;
+      }
+    } catch {
+      // Fall back to local file reads outside Netlify Blob-enabled environments.
     }
   }
 
@@ -390,10 +419,15 @@ export async function writePublicDocument(document: PublicDocument) {
   const store = getPersistentStore();
 
   if (store) {
-    await store.setJSON(publicDocumentsBlobKey, nextDocuments);
-    return;
+    try {
+      await store.setJSON(publicDocumentsBlobKey, nextDocuments);
+      return;
+    } catch {
+      // Fall back to local writes only when Blob storage is unavailable.
+    }
   }
 
+  ensureWritableFallbackAvailable();
   await writeLocalPublicDocumentsFile(nextDocuments);
 }
 
@@ -410,10 +444,15 @@ export async function deletePublicDocument(kind: PublicDocumentKind) {
   const store = getPersistentStore();
 
   if (store) {
-    await store.setJSON(publicDocumentsBlobKey, nextDocuments);
-    return true;
+    try {
+      await store.setJSON(publicDocumentsBlobKey, nextDocuments);
+      return true;
+    } catch {
+      // Fall back to local writes only when Blob storage is unavailable.
+    }
   }
 
+  ensureWritableFallbackAvailable();
   await writeLocalPublicDocumentsFile(nextDocuments);
   return true;
 }
@@ -464,10 +503,15 @@ export async function deleteTournamentDocument(
   const store = getPersistentStore();
 
   if (store) {
-    await store.setJSON(resultsBlobKey, nextResults);
-    return true;
+    try {
+      await store.setJSON(resultsBlobKey, nextResults);
+      return true;
+    } catch {
+      // Fall back to local writes only when Blob storage is unavailable.
+    }
   }
 
+  ensureWritableFallbackAvailable();
   await writeLocalResultsFile(nextResults);
   return true;
 }
