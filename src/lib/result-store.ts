@@ -1,5 +1,6 @@
 ﻿import "server-only";
 
+import { getDeployStore, getStore } from "@netlify/blobs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -20,6 +21,9 @@ const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "current-results.json");
 const publicDocumentsFile = path.join(dataDir, "public-documents.json");
 const defaultCategoryId: TournamentCategoryId = "type-1";
+const blobStoreName = "testswiss-data";
+const resultsBlobKey = "current-results";
+const publicDocumentsBlobKey = "public-documents";
 
 function isStoredTournamentData(value: unknown): value is StoredTournamentData {
   if (!value || typeof value !== "object") {
@@ -222,13 +226,78 @@ function normalizeStoredResults(value: unknown): StoredTournamentCollection {
   return Object.fromEntries(entries) as StoredTournamentCollection;
 }
 
-export async function readTournamentResults() {
+function isRunningOnNetlify() {
+  return process.env.NETLIFY === "true";
+}
+
+function getPersistentStore() {
+  if (!isRunningOnNetlify()) {
+    return null;
+  }
+
+  if (process.env.CONTEXT === "production") {
+    return getStore(blobStoreName, { consistency: "strong" });
+  }
+
+  return getDeployStore(blobStoreName);
+}
+
+async function readLocalResultsFile() {
   try {
     const raw = await readFile(dataFile, "utf8");
     return normalizeStoredResults(JSON.parse(raw));
   } catch {
     return {};
   }
+}
+
+async function writeLocalResultsFile(results: StoredTournamentCollection) {
+  await mkdir(dataDir, { recursive: true });
+  await writeFile(dataFile, JSON.stringify(results, null, 2), "utf8");
+}
+
+async function readLocalPublicDocumentsFile() {
+  try {
+    const raw = await readFile(publicDocumentsFile, "utf8");
+    const parsed = JSON.parse(raw);
+
+    if (!parsed || typeof parsed !== "object") {
+      return {} as Partial<Record<PublicDocumentKind, PublicDocument>>;
+    }
+
+    const entries = Object.entries(parsed as Record<string, unknown>).flatMap(([key, value]) => {
+      if (isPublicDocument(value) && value.kind === key) {
+        return [[key, value] as const];
+      }
+
+      return [];
+    });
+
+    return Object.fromEntries(entries) as Partial<Record<PublicDocumentKind, PublicDocument>>;
+  } catch {
+    return {};
+  }
+}
+
+async function writeLocalPublicDocumentsFile(
+  documents: Partial<Record<PublicDocumentKind, PublicDocument>>,
+) {
+  await mkdir(dataDir, { recursive: true });
+  await writeFile(publicDocumentsFile, JSON.stringify(documents, null, 2), "utf8");
+}
+
+export async function readTournamentResults() {
+  const store = getPersistentStore();
+
+  if (store) {
+    const blobResults = await store.get(resultsBlobKey, { type: "json" });
+
+    if (blobResults) {
+      return normalizeStoredResults(blobResults);
+    }
+  }
+
+  return readLocalResultsFile();
 }
 
 export async function readCurrentTournamentData(categoryId: TournamentCategoryId = defaultCategoryId) {
@@ -279,31 +348,36 @@ export async function writeTournamentDocuments(
     },
   };
 
-  await mkdir(dataDir, { recursive: true });
-  await writeFile(dataFile, JSON.stringify(nextResults, null, 2), "utf8");
+  const store = getPersistentStore();
+
+  if (store) {
+    await store.setJSON(resultsBlobKey, nextResults);
+    return;
+  }
+
+  await writeLocalResultsFile(nextResults);
 }
 
 export async function readPublicDocuments() {
-  try {
-    const raw = await readFile(publicDocumentsFile, "utf8");
-    const parsed = JSON.parse(raw);
+  const store = getPersistentStore();
 
-    if (!parsed || typeof parsed !== "object") {
-      return {} as Partial<Record<PublicDocumentKind, PublicDocument>>;
+  if (store) {
+    const blobDocuments = await store.get(publicDocumentsBlobKey, { type: "json" });
+
+    if (blobDocuments && typeof blobDocuments === "object") {
+      const entries = Object.entries(blobDocuments as Record<string, unknown>).flatMap(([key, value]) => {
+        if (isPublicDocument(value) && value.kind === key) {
+          return [[key, value] as const];
+        }
+
+        return [];
+      });
+
+      return Object.fromEntries(entries) as Partial<Record<PublicDocumentKind, PublicDocument>>;
     }
-
-    const entries = Object.entries(parsed as Record<string, unknown>).flatMap(([key, value]) => {
-      if (isPublicDocument(value) && value.kind === key) {
-        return [[key, value] as const];
-      }
-
-      return [];
-    });
-
-    return Object.fromEntries(entries) as Partial<Record<PublicDocumentKind, PublicDocument>>;
-  } catch {
-    return {};
   }
+
+  return readLocalPublicDocumentsFile();
 }
 
 export async function writePublicDocument(document: PublicDocument) {
@@ -313,8 +387,14 @@ export async function writePublicDocument(document: PublicDocument) {
     [document.kind]: document,
   };
 
-  await mkdir(dataDir, { recursive: true });
-  await writeFile(publicDocumentsFile, JSON.stringify(nextDocuments, null, 2), "utf8");
+  const store = getPersistentStore();
+
+  if (store) {
+    await store.setJSON(publicDocumentsBlobKey, nextDocuments);
+    return;
+  }
+
+  await writeLocalPublicDocumentsFile(nextDocuments);
 }
 
 export async function deletePublicDocument(kind: PublicDocumentKind) {
@@ -327,8 +407,14 @@ export async function deletePublicDocument(kind: PublicDocumentKind) {
   const nextDocuments = { ...currentDocuments };
   delete nextDocuments[kind];
 
-  await mkdir(dataDir, { recursive: true });
-  await writeFile(publicDocumentsFile, JSON.stringify(nextDocuments, null, 2), "utf8");
+  const store = getPersistentStore();
+
+  if (store) {
+    await store.setJSON(publicDocumentsBlobKey, nextDocuments);
+    return true;
+  }
+
+  await writeLocalPublicDocumentsFile(nextDocuments);
   return true;
 }
 
@@ -375,7 +461,13 @@ export async function deleteTournamentDocument(
     },
   };
 
-  await mkdir(dataDir, { recursive: true });
-  await writeFile(dataFile, JSON.stringify(nextResults, null, 2), "utf8");
+  const store = getPersistentStore();
+
+  if (store) {
+    await store.setJSON(resultsBlobKey, nextResults);
+    return true;
+  }
+
+  await writeLocalResultsFile(nextResults);
   return true;
 }
