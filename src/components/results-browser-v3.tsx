@@ -684,28 +684,47 @@ export function ResultsBrowserV3({
                 {otherDocuments.map((document) => (
                   <article
                     key={document.id}
-                    className="rounded-[1.5rem] border border-violet-100 bg-white/80 p-5"
+                    className={[
+                      "rounded-[1.5rem] border border-violet-100 bg-white/80",
+                      hasTournamentDocumentImage(document) ? "overflow-hidden p-0" : "p-5",
+                    ].join(" ")}
                   >
-                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
-                      {getTournamentDocumentKindLabel(document.kind)}
-                    </p>
-                    {document.roundLabel ? (
-                      <p className="mt-2 text-sm font-semibold text-violet-700">{document.roundLabel}</p>
-                    ) : null}
-                    <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
-                    <p className="mt-2 text-sm text-violet-700/75">
-                      {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
-                    </p>
                     {hasTournamentDocumentImage(document) ? (
-                      <DocumentImagePreview
-                        src={getTournamentDocumentAssetUrl(document)!}
-                        alt={document.title}
-                        className="-mx-5 -mb-5 mt-4"
-                      />
+                      <>
+                        <div className="px-5 pb-4 pt-5">
+                          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                            {getTournamentDocumentKindLabel(document.kind)}
+                          </p>
+                          {document.roundLabel ? (
+                            <p className="mt-2 text-sm font-semibold text-violet-700">{document.roundLabel}</p>
+                          ) : null}
+                          <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
+                          <p className="mt-2 text-sm text-violet-700/75">
+                            {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
+                          </p>
+                        </div>
+                        <DocumentImagePreview
+                          src={getTournamentDocumentAssetUrl(document)!}
+                          alt={document.title}
+                          className="rounded-t-none border-x-0 border-b-0 shadow-none"
+                        />
+                      </>
                     ) : (
-                      <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-violet-50/80 p-4 text-sm leading-7 text-violet-950">
-                        {document.contentText || "ไม่มีข้อความในเอกสาร"}
-                      </pre>
+                      <>
+                        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                          {getTournamentDocumentKindLabel(document.kind)}
+                        </p>
+                        {document.roundLabel ? (
+                          <p className="mt-2 text-sm font-semibold text-violet-700">{document.roundLabel}</p>
+                        ) : null}
+                        <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
+                        <p className="mt-2 text-sm text-violet-700/75">
+                          {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
+                        </p>
+                        <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-violet-50/80 p-4 text-sm leading-7 text-violet-950">
+                          {document.contentText || "ไม่มีข้อความในเอกสาร"}
+                        </pre>
+                      </>
                     )}
                   </article>
                 ))}
