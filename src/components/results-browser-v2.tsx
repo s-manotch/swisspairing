@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -38,9 +38,9 @@ export function ResultsBrowserV2({
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">
-          เธเธฃเธฐเน€เธ เธ—เธเธฒเธฃเนเธเนเธเธเธฑเธ
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">
+          ประเภทการแข่งขัน
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           {tournamentCategories.map((category) => (
@@ -49,8 +49,8 @@ export function ResultsBrowserV2({
               className={[
                 "rounded-full border px-4 py-2 text-sm font-semibold transition",
                 category.id === activeCategoryId
-                  ? "border-emerald-700 bg-emerald-700 text-white"
-                  : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
+                  ? "border-violet-700 bg-violet-700 text-white"
+                  : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
               ].join(" ")}
               type="button"
               onClick={() => setActiveCategoryId(category.id)}
@@ -60,15 +60,15 @@ export function ResultsBrowserV2({
           ))}
         </div>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">
-          เธฃเธญเธเธเธฒเธฃเนเธเนเธเธเธฑเธ
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">
+          รอบการแข่งขัน
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           {visibleRounds.map((round) => (
             <Link
               key={round.id}
               href={`#${activeCategoryId}-${round.id}`}
-              className="rounded-full border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50"
+              className="rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-800 transition hover:bg-violet-50"
             >
               {round.label}
             </Link>
@@ -89,8 +89,8 @@ export function ResultsBrowserV2({
           );
           const playerList = parsedPlayers.length ? parsedPlayers : (previewData?.players ?? []);
           const statusLabel = !previewData
-            ? `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(round.id)} เธขเธฑเธเนเธกเนเธกเธตเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธเนเธเธ parsed`
-            : `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(round.id)} - เน€เธเธขเนเธเธฃเนเธเธฒเธ ${previewData.sourceFileName}`;
+            ? `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(round.id)} ยังไม่มีผลการแข่งขันแบบ parsed`
+            : `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(round.id)} - เผยแพร่จาก ${previewData.sourceFileName}`;
 
           return (
             <section
@@ -103,8 +103,8 @@ export function ResultsBrowserV2({
                 players={playerList}
                 resultDocuments={resultDocuments}
                 statusLabel={statusLabel}
-                emptyTitle={`เธขเธฑเธเนเธกเนเธกเธตเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ ${getTournamentCategoryLabel(activeCategoryId)} ${getTournamentRoundLabel(round.id)}`}
-                emptyDescription="เธฃเธญเธเธเธตเนเธขเธฑเธเนเธกเนเธกเธตเธเนเธญเธกเธนเธฅเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธเธ—เธตเนเน€เธเธขเนเธเธฃเน"
+                emptyTitle={`ยังไม่มีผลการแข่งขัน ${getTournamentCategoryLabel(activeCategoryId)} ${getTournamentRoundLabel(round.id)}`}
+                emptyDescription="รอบนี้ยังไม่มีข้อมูลผลการแข่งขันที่เผยแพร่"
               />
             </section>
           );
@@ -113,4 +113,3 @@ export function ResultsBrowserV2({
     </div>
   );
 }
-

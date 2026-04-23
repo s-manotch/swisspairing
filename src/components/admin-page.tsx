@@ -136,7 +136,7 @@ export function AdminPage() {
   }
 
   if (!session) {
-    return <div className="rounded-[2rem] bg-white/70 p-8 text-emerald-900">กำลังโหลด...</div>;
+    return <div className="rounded-[2rem] bg-white/70 p-8 text-violet-900">กำลังโหลด...</div>;
   }
 
   if (!session.configured) {
@@ -153,20 +153,20 @@ export function AdminPage() {
 
   if (!session.authenticated) {
     return (
-      <div className="mx-auto w-full max-w-3xl rounded-[2rem] border border-white/60 bg-[var(--surface)] p-8 shadow-[0_24px_80px_rgba(22,101,52,0.18)] backdrop-blur">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">Admin Access</p>
-        <h1 className="mt-2 font-serif text-4xl text-emerald-950">เข้าสู่ระบบแอดมิน</h1>
-        <p className="mt-4 text-emerald-900/70">หน้านี้ใช้สำหรับอัปเดตไฟล์ผลการแข่งขันที่จะเผยแพร่ให้ผู้ชมเห็น</p>
+      <div className="mx-auto w-full max-w-3xl rounded-[2rem] border border-white/60 bg-[var(--surface)] p-8 shadow-[0_24px_80px_rgba(109,59,209,0.18)] backdrop-blur">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Admin Access</p>
+        <h1 className="mt-2 font-serif text-4xl text-violet-950">เข้าสู่ระบบแอดมิน</h1>
+        <p className="mt-4 text-violet-900/70">หน้านี้ใช้สำหรับอัปเดตไฟล์ผลการแข่งขันที่จะเผยแพร่ให้ผู้ชมเห็น</p>
         <form className="mt-8 flex flex-col gap-4" onSubmit={handleLogin}>
           <input
-            className="rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-base outline-none ring-0 placeholder:text-emerald-300"
+            className="rounded-2xl border border-violet-200 bg-white px-4 py-3 text-base outline-none ring-0 placeholder:text-violet-300"
             type="password"
             placeholder="กรอกรหัสผ่านแอดมิน"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
           <button
-            className="rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-full bg-violet-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:opacity-60"
             type="submit"
             disabled={isBusy || !password.trim()}
           >
@@ -182,21 +182,21 @@ export function AdminPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-8">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">Admin Panel</p>
-            <h1 className="mt-2 font-serif text-4xl text-emerald-950">อัปเดตผลการแข่งขัน</h1>
-            <p className="mt-4 max-w-2xl text-emerald-900/70">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Admin Panel</p>
+            <h1 className="mt-2 font-serif text-4xl text-violet-950">อัปเดตผลการแข่งขัน</h1>
+            <p className="mt-4 max-w-2xl text-violet-900/70">
               เมื่อคุณอัปโหลดไฟล์ใหม่ ข้อมูลจะถูกเผยแพร่ไปยังหน้า public ทันทีที่บันทึกสำเร็จ
             </p>
           </div>
           <div className="flex gap-3">
-            <a className="rounded-full border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50" href="/results">
+            <a className="rounded-full border border-violet-200 px-5 py-3 text-sm font-semibold text-violet-800 transition hover:bg-violet-50" href="/results">
               ดูหน้าสาธารณะ
             </a>
             <button
-              className="rounded-full bg-emerald-100 px-5 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200 disabled:opacity-60"
+              className="rounded-full bg-violet-100 px-5 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-200 disabled:opacity-60"
               type="button"
               onClick={handleLogout}
               disabled={isBusy}
@@ -207,14 +207,14 @@ export function AdminPage() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เผยแพร่ข้อมูล</p>
-        <h2 className="mt-2 font-serif text-3xl text-emerald-950">อัปโหลดไฟล์ HTML ใหม่</h2>
-        <p className="mt-4 text-sm leading-7 text-emerald-950/75">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เผยแพร่ข้อมูล</p>
+        <h2 className="mt-2 font-serif text-3xl text-violet-950">อัปโหลดไฟล์ HTML ใหม่</h2>
+        <p className="mt-4 text-sm leading-7 text-violet-950/75">
           รองรับไฟล์ผลการแข่งขันรูปแบบ Swiss Perfect เมื่ออัปโหลดสำเร็จ หน้า public จะเห็นข้อมูลล่าสุดทันที
         </p>
         <div className="mt-6">
-          <label className="mb-3 block text-sm font-semibold text-emerald-900">ประเภทการแข่งขัน</label>
+          <label className="mb-3 block text-sm font-semibold text-violet-900">ประเภทการแข่งขัน</label>
           <div className="flex flex-wrap gap-3">
             {tournamentCategories.map((category) => {
               const isActive = category.id === selectedCategoryId;
@@ -225,8 +225,8 @@ export function AdminPage() {
                   className={[
                     "rounded-full border px-4 py-2 text-sm font-semibold transition",
                     isActive
-                      ? "border-emerald-700 bg-emerald-700 text-white"
-                      : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
+                      ? "border-violet-700 bg-violet-700 text-white"
+                      : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
                   ].join(" ")}
                   type="button"
                   onClick={() => setSelectedCategoryId(category.id)}
@@ -237,12 +237,12 @@ export function AdminPage() {
             })}
           </div>
         </div>
-        <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-emerald-300 bg-white/75 px-6 py-8 text-center transition hover:border-emerald-500 hover:bg-white">
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">เลือกไฟล์</span>
-          <span className="mt-3 font-serif text-2xl text-emerald-950">
+        <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-violet-300 bg-white/75 px-6 py-8 text-center transition hover:border-violet-500 hover:bg-white">
+          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">เลือกไฟล์</span>
+          <span className="mt-3 font-serif text-2xl text-violet-950">
             อัปโหลดผลการแข่งขันใหม่สำหรับ {getTournamentCategoryLabel(selectedCategoryId)}
           </span>
-          <span className="mt-3 text-sm text-emerald-900/65">เฉพาะแอดมินเท่านั้นที่อัปเดตข้อมูลได้</span>
+          <span className="mt-3 text-sm text-violet-900/65">เฉพาะแอดมินเท่านั้นที่อัปเดตข้อมูลได้</span>
           <input
             className="sr-only"
             type="file"
@@ -264,4 +264,3 @@ export function AdminPage() {
     </div>
   );
 }
-

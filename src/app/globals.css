@@ -1,14 +1,14 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
-  --background: #eff9f1;
-  --foreground: #163321;
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-strong: rgba(255, 255, 255, 0.92);
-  --sage-1: #e4f6e7;
-  --sage-2: #c8ebd0;
-  --sage-3: #86d89c;
-  --sage-4: #22784a;
+  --background: #f7f1ff;
+  --foreground: #221733;
+  --surface: rgba(255, 255, 255, 0.74);
+  --surface-strong: rgba(255, 255, 255, 0.9);
+  --lavender-1: #efe4ff;
+  --lavender-2: #dcc7ff;
+  --lavender-3: #b68cff;
+  --lavender-4: #6d3bd1;
 }
 
 @theme inline {
@@ -32,9 +32,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   background-image:
-    radial-gradient(circle at top left, rgba(175, 231, 188, 0.82), transparent 34%),
-    radial-gradient(circle at top right, rgba(164, 227, 190, 0.72), transparent 28%),
-    linear-gradient(180deg, #f8fff9 0%, #f1fbf3 44%, #e8f6ec 100%);
+    radial-gradient(circle at top left, rgba(219, 190, 255, 0.9), transparent 35%),
+    radial-gradient(circle at top right, rgba(188, 167, 255, 0.8), transparent 28%),
+    linear-gradient(180deg, #fbf8ff 0%, #f4edff 45%, #efe7ff 100%);
   font-family: var(--font-noto-sans-thai), sans-serif;
 }
 
@@ -43,5 +43,5 @@ a {
 }
 
 ::selection {
-  background: rgba(134, 216, 156, 0.35);
+  background: rgba(182, 140, 255, 0.35);
 }

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { TournamentDashboard } from "@/components/tournament-dashboard";
@@ -22,16 +22,16 @@ export function ResultsTabs({ results, initialCategoryId }: ResultsTabsProps) {
 
   const statusLabel = useMemo(() => {
     if (!activeData) {
-      return `${getTournamentCategoryLabel(activeCategoryId)} เธขเธฑเธเนเธกเนเธกเธตเธเนเธญเธกเธนเธฅ`;
+      return `${getTournamentCategoryLabel(activeCategoryId)} ยังไม่มีข้อมูล`;
     }
 
-    return `${getTournamentCategoryLabel(activeCategoryId)} โ€ข เน€เธเธขเนเธเธฃเนเธเธฒเธ ${activeData.sourceFileName}`;
+    return `${getTournamentCategoryLabel(activeCategoryId)} • เผยแพร่จาก ${activeData.sourceFileName}`;
   }, [activeCategoryId, activeData]);
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เน€เธฅเธทเธญเธเธเธฃเธฐเน€เธ เธ—เธเธฒเธฃเนเธเนเธเธเธฑเธ</p>
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เลือกประเภทการแข่งขัน</p>
         <div className="mt-4 flex flex-wrap gap-3">
           {tournamentCategories.map((category) => {
             const isActive = category.id === activeCategoryId;
@@ -43,14 +43,14 @@ export function ResultsTabs({ results, initialCategoryId }: ResultsTabsProps) {
                 className={[
                   "rounded-full border px-4 py-2 text-sm font-semibold transition",
                   isActive
-                    ? "border-emerald-700 bg-emerald-700 text-white"
-                    : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
+                    ? "border-violet-700 bg-violet-700 text-white"
+                    : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
                 ].join(" ")}
                 type="button"
                 onClick={() => setActiveCategoryId(category.id)}
               >
                 {category.label}
-                {hasData ? "" : " (เธขเธฑเธเนเธกเนเธกเธตเธเนเธญเธกเธนเธฅ)"}
+                {hasData ? "" : " (ยังไม่มีข้อมูล)"}
               </button>
             );
           })}
@@ -60,10 +60,9 @@ export function ResultsTabs({ results, initialCategoryId }: ResultsTabsProps) {
       <TournamentDashboard
         data={activeData}
         statusLabel={statusLabel}
-        emptyTitle={`เธขเธฑเธเนเธกเนเธกเธตเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ${getTournamentCategoryLabel(activeCategoryId)}`}
-        emptyDescription="เน€เธฅเธทเธญเธเนเธ—เนเธเธ”เนเธฒเธเธเธเน€เธเธทเนเธญเธชเธฅเธฑเธเธ”เธนเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธเนเธ•เนเธฅเธฐเธเธฃเธฐเน€เธ เธ— เธเนเธญเธกเธนเธฅเธเธฐเธญเธฑเธเน€เธ”เธ•เธเธฒเธเนเธเธฅเนเธ—เธตเนเนเธญเธ”เธกเธดเธเน€เธเธขเนเธเธฃเนเธฅเนเธฒเธชเธธเธ”"
+        emptyTitle={`ยังไม่มีผลการแข่งขัน${getTournamentCategoryLabel(activeCategoryId)}`}
+        emptyDescription="เลือกแท็บด้านบนเพื่อสลับดูผลการแข่งขันแต่ละประเภท ข้อมูลจะอัปเดตจากไฟล์ที่แอดมินเผยแพร่ล่าสุด"
       />
     </div>
   );
 }
-
