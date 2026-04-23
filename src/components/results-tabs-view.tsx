@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { TournamentDashboard } from "@/components/tournament-dashboard";
@@ -38,8 +38,8 @@ export function ResultsTabsView({
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">
           Competition Categories
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -53,8 +53,8 @@ export function ResultsTabsView({
                 className={[
                   "rounded-full border px-4 py-2 text-sm font-semibold transition",
                   isActive
-                    ? "border-violet-700 bg-violet-700 text-white"
-                    : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                    ? "border-emerald-700 bg-emerald-700 text-white"
+                    : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                 ].join(" ")}
                 type="button"
                 onClick={() => setActiveCategoryId(category.id)}
@@ -76,3 +76,4 @@ export function ResultsTabsView({
     </div>
   );
 }
+

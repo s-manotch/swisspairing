@@ -275,10 +275,10 @@ export function ResultsBrowserV3({
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-5 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-5 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-6">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสารสำหรับผู้ใช้งานทั่วไป</p>
-          <h2 className="mt-2 font-serif text-2xl text-violet-950">เอกสารสำหรับดาวน์โหลด</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เอกสารสำหรับผู้ใช้งานทั่วไป</p>
+          <h2 className="mt-2 font-serif text-2xl text-emerald-950">เอกสารสำหรับดาวน์โหลด</h2>
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-3">
@@ -288,31 +288,31 @@ export function ResultsBrowserV3({
             return (
               <article
                 key={kind.id}
-                className="rounded-[1.35rem] border border-violet-100 bg-white/85 p-4 shadow-[0_10px_24px_rgba(109,59,209,0.08)]"
+                className="rounded-[1.35rem] border border-emerald-100 bg-white/85 p-4 shadow-[0_10px_24px_rgba(22,101,52,0.08)]"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-500">
                   PDF
                 </p>
-                <h3 className="mt-2 text-lg font-semibold text-violet-950">
+                <h3 className="mt-2 text-lg font-semibold text-emerald-950">
                   {getPublicDocumentKindLabel(kind.id)}
                 </h3>
                 {document ? (
                   <>
-                    <p className="mt-2 line-clamp-2 text-sm text-violet-700/75">
+                    <p className="mt-2 line-clamp-2 text-sm text-emerald-700/75">
                       {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
                     </p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       <a
                         href={getPublicDocumentDownloadUrl(document) ?? "#"}
                         download={document.sourceFileName}
-                        className="rounded-full border border-violet-700 bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-800"
+                        className="rounded-full border border-emerald-700 bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800"
                       >
                         ดาวน์โหลด
                       </a>
                     </div>
                   </>
                 ) : (
-                  <p className="mt-3 text-sm leading-6 text-violet-700/75">
+                  <p className="mt-3 text-sm leading-6 text-emerald-700/75">
                     ยังไม่มีไฟล์ PDF ที่เผยแพร่ในหัวข้อนี้
                   </p>
                 )}
@@ -322,15 +322,15 @@ export function ResultsBrowserV3({
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.14)] backdrop-blur sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.14)] backdrop-blur sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">
           ประเภทการแข่งขัน
         </p>
-        <h2 className="mt-2 font-serif text-3xl text-violet-950 sm:text-4xl">เลือกประเภทที่ต้องการดูผลการแข่งขัน</h2>
+        <h2 className="mt-2 font-serif text-3xl text-emerald-950 sm:text-4xl">เลือกประเภทที่ต้องการดูผลการแข่งขัน</h2>
 
         <div className="mt-6 grid gap-5">
           <div>
-            <p className="mb-3 text-sm font-semibold text-violet-700">บุคคล</p>
+            <p className="mb-3 text-sm font-semibold text-emerald-700">บุคคล</p>
             <div className="flex flex-wrap gap-3">
               {individualCategories.map((category) => (
                 <button
@@ -338,8 +338,8 @@ export function ResultsBrowserV3({
                   className={[
                     "rounded-full border px-5 py-3 text-sm font-semibold transition sm:text-base",
                     category.id === activeCategoryId
-                      ? "border-violet-700 bg-violet-700 text-white"
-                      : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                      ? "border-emerald-700 bg-emerald-700 text-white"
+                      : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                   ].join(" ")}
                   type="button"
                   onClick={() => setActiveCategoryId(category.id)}
@@ -350,7 +350,7 @@ export function ResultsBrowserV3({
             </div>
           </div>
           <div>
-            <p className="mb-3 text-sm font-semibold text-violet-700">ทีม</p>
+            <p className="mb-3 text-sm font-semibold text-emerald-700">ทีม</p>
             <div className="flex flex-wrap gap-3">
               {teamCategories.map((category) => (
                 <button
@@ -358,8 +358,8 @@ export function ResultsBrowserV3({
                   className={[
                     "rounded-full border px-5 py-3 text-sm font-semibold transition sm:text-base",
                     category.id === activeCategoryId
-                      ? "border-violet-700 bg-violet-700 text-white"
-                      : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                      ? "border-emerald-700 bg-emerald-700 text-white"
+                      : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                   ].join(" ")}
                   type="button"
                   onClick={() => setActiveCategoryId(category.id)}
@@ -371,7 +371,7 @@ export function ResultsBrowserV3({
           </div>
         </div>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">
           ไปยังรอบ
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -379,7 +379,7 @@ export function ResultsBrowserV3({
             <Link
               key={round.id}
               href={`#${activeCategoryId}-${round.id}`}
-              className="rounded-full border border-violet-200 bg-white px-5 py-3 text-sm font-semibold text-violet-800 transition hover:bg-violet-50 sm:text-base"
+              className="rounded-full border border-emerald-200 bg-white px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 sm:text-base"
             >
               {round.label}
             </Link>
@@ -387,7 +387,7 @@ export function ResultsBrowserV3({
           {standingsDocuments.length ? (
             <Link
               href={`#${activeCategoryId}-standings`}
-              className="rounded-full border border-violet-200 bg-white px-5 py-3 text-sm font-semibold text-violet-800 transition hover:bg-violet-50 sm:text-base"
+              className="rounded-full border border-emerald-200 bg-white px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 sm:text-base"
             >
               Standings
             </Link>
@@ -395,51 +395,51 @@ export function ResultsBrowserV3({
         </div>
       </section>
 
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-[var(--surface)] p-8 shadow-[0_24px_80px_rgba(109,59,209,0.18)] backdrop-blur sm:p-10">
-        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[rgba(182,140,255,0.28)] blur-3xl" />
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-[var(--surface)] p-8 shadow-[0_24px_80px_rgba(22,101,52,0.18)] backdrop-blur sm:p-10">
+        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[rgba(134,239,172,0.28)] blur-3xl" />
         <div className="absolute bottom-0 left-12 h-28 w-28 rounded-full bg-[rgba(255,255,255,0.7)] blur-2xl" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-violet-700">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-emerald-700">
               TestSwiss Tournament Board
             </p>
-            <h1 className="font-serif text-5xl leading-none text-violet-950 sm:text-6xl">
+            <h1 className="font-serif text-5xl leading-none text-emerald-950 sm:text-6xl">
               {getTournamentCategoryLabel(activeCategoryId)}
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-violet-950/70 sm:text-lg">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-emerald-950/70 sm:text-lg">
               หน้านี้แสดงข้อมูลรวมของประเภทการแข่งขัน และผลการแข่งขันทุกรอบแบบต่อเนื่องในหน้าเดียว
             </p>
             <div className="mt-6">
               <Link
                 href="/admin"
-                className="inline-flex items-center rounded-full border border-violet-300 bg-white/85 px-5 py-3 text-sm font-semibold text-violet-800 transition hover:bg-white hover:text-violet-900"
+                className="inline-flex items-center rounded-full border border-emerald-300 bg-white/85 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-white hover:text-emerald-900"
               >
                 เข้าใช้งานในฐานะแอดมิน
               </Link>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
-            <div className="min-w-24 rounded-[1.5rem] border border-white/70 bg-[var(--surface-strong)] px-4 py-5 text-center shadow-[0_12px_30px_rgba(124,58,237,0.12)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">รอบ</p>
-              <p className="mt-2 text-3xl font-bold text-violet-950">{visibleRounds.length}</p>
+            <div className="min-w-24 rounded-[1.5rem] border border-white/70 bg-[var(--surface-strong)] px-4 py-5 text-center shadow-[0_12px_30px_rgba(16,185,129,0.12)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-500">รอบ</p>
+              <p className="mt-2 text-3xl font-bold text-emerald-950">{visibleRounds.length}</p>
             </div>
-            <div className="min-w-24 rounded-[1.5rem] border border-white/70 bg-[var(--surface-strong)] px-4 py-5 text-center shadow-[0_12px_30px_rgba(124,58,237,0.12)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">ผู้เล่น</p>
-              <p className="mt-2 text-3xl font-bold text-violet-950">{sharedPlayers.length}</p>
+            <div className="min-w-24 rounded-[1.5rem] border border-white/70 bg-[var(--surface-strong)] px-4 py-5 text-center shadow-[0_12px_30px_rgba(16,185,129,0.12)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-500">ผู้เล่น</p>
+              <p className="mt-2 text-3xl font-bold text-emerald-950">{sharedPlayers.length}</p>
             </div>
-            <div className="min-w-24 rounded-[1.5rem] border border-white/70 bg-[var(--surface-strong)] px-4 py-5 text-center shadow-[0_12px_30px_rgba(124,58,237,0.12)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">ดาวน์โหลด</p>
-              <p className="mt-2 text-3xl font-bold text-violet-950">{visiblePublicDocuments.length}</p>
+            <div className="min-w-24 rounded-[1.5rem] border border-white/70 bg-[var(--surface-strong)] px-4 py-5 text-center shadow-[0_12px_30px_rgba(16,185,129,0.12)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-500">ดาวน์โหลด</p>
+              <p className="mt-2 text-3xl font-bold text-emerald-950">{visiblePublicDocuments.length}</p>
             </div>
           </div>
         </div>
       </section>
 
       <section className="grid gap-8 xl:grid-cols-[1.42fr_0.58fr]">
-        <div className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-5">
+        <div className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-5">
           <div className="mb-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">ผลการแข่งขัน</p>
-            <h2 className="font-serif text-3xl text-violet-950">ผลการแข่งขันทุกรอบ</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">ผลการแข่งขัน</p>
+            <h2 className="font-serif text-3xl text-emerald-950">ผลการแข่งขันทุกรอบ</h2>
           </div>
 
           <div className="grid gap-8">
@@ -457,18 +457,18 @@ export function ResultsBrowserV3({
                 <section
                   key={round.id}
                   id={`${activeCategoryId}-${round.id}`}
-                  className="scroll-mt-28 rounded-[1.75rem] border border-violet-100 bg-white/70 p-0"
+                  className="scroll-mt-28 rounded-[1.75rem] border border-emerald-100 bg-white/70 p-0"
                 >
                   <div className="mb-5 flex flex-col gap-3 px-5 pt-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">
+                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-500">
                         รอบการแข่งขัน
                       </p>
-                      <h3 className="mt-2 font-serif text-2xl text-violet-950">
+                      <h3 className="mt-2 font-serif text-2xl text-emerald-950">
                         {getTournamentRoundLabel(round.id)}
                       </h3>
                     </div>
-                    <span className="rounded-full bg-violet-100 px-4 py-2 text-sm font-semibold text-violet-700">
+                    <span className="rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
                       {parsedResult
                         ? `เผยแพร่จาก ${parsedResult.sourceFileName}`
                         : "แสดงจากไฟล์ผลการแข่งขัน"}
@@ -480,18 +480,18 @@ export function ResultsBrowserV3({
                       {imageResults.map((document) => (
                         <article
                           key={document.id}
-                          className="rounded-[1.5rem] border-t border-violet-100 bg-white/90 p-0 shadow-[0_10px_28px_rgba(109,59,209,0.08)]"
+                          className="rounded-[1.5rem] border-t border-emerald-100 bg-white/90 p-0 shadow-[0_10px_28px_rgba(22,101,52,0.08)]"
                         >
                           <div className="mb-4 flex flex-col gap-2 px-5 pt-5 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">
                                 ไฟล์ผลการแข่งขัน
                               </p>
-                              <h4 className="mt-2 text-xl font-semibold text-violet-950">
+                              <h4 className="mt-2 text-xl font-semibold text-emerald-950">
                                 {document.title}
                               </h4>
                             </div>
-                            <p className="text-sm text-violet-700/75">{document.sourceFileName}</p>
+                            <p className="text-sm text-emerald-700/75">{document.sourceFileName}</p>
                           </div>
                           <DocumentImagePreview
                             src={getTournamentDocumentAssetUrl(document)!}
@@ -512,18 +512,18 @@ export function ResultsBrowserV3({
                         return (
                           <article
                             key={document.id}
-                          className="rounded-[1.5rem] border-t border-violet-100 bg-white/90 p-0 shadow-[0_10px_28px_rgba(109,59,209,0.08)]"
+                          className="rounded-[1.5rem] border-t border-emerald-100 bg-white/90 p-0 shadow-[0_10px_28px_rgba(22,101,52,0.08)]"
                         >
                             <div className="mb-4 flex flex-col gap-2 px-5 pt-5 sm:flex-row sm:items-center sm:justify-between">
                               <div>
-                                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">
                                   ไฟล์ผลการแข่งขัน
                                 </p>
-                                <h4 className="mt-2 text-xl font-semibold text-violet-950">
+                                <h4 className="mt-2 text-xl font-semibold text-emerald-950">
                                   {document.title}
                                 </h4>
                               </div>
-                              <p className="text-sm text-violet-700/75">{document.sourceFileName}</p>
+                              <p className="text-sm text-emerald-700/75">{document.sourceFileName}</p>
                             </div>
 
                             {hasTournamentDocumentImage(document) ? (
@@ -537,7 +537,7 @@ export function ResultsBrowserV3({
                                 <ResultsMatchTable matches={fallbackMatches} />
                               </div>
                             ) : (
-                              <pre className="mx-5 mb-5 overflow-x-auto whitespace-pre rounded-[1.25rem] bg-violet-50/80 p-4 font-mono text-sm leading-7 text-violet-950 [font-variant-numeric:tabular-nums]">
+                              <pre className="mx-5 mb-5 overflow-x-auto whitespace-pre rounded-[1.25rem] bg-emerald-50/80 p-4 font-mono text-sm leading-7 text-emerald-950 [font-variant-numeric:tabular-nums]">
                                 {alignedText || "ไม่มีข้อความในไฟล์ผลการแข่งขัน"}
                               </pre>
                             )}
@@ -546,7 +546,7 @@ export function ResultsBrowserV3({
                       })}
                     </div>
                   ) : (
-                    <div className="rounded-[1.5rem] border border-dashed border-violet-200 bg-white/60 px-6 py-10 text-center text-violet-700/75">
+                    <div className="rounded-[1.5rem] border border-dashed border-emerald-200 bg-white/60 px-6 py-10 text-center text-emerald-700/75">
                       รอบนี้ยังไม่มีผลการแข่งขันที่เผยแพร่
                     </div>
                   )}
@@ -557,16 +557,16 @@ export function ResultsBrowserV3({
             {standingsDocuments.length ? (
               <section
                 id={`${activeCategoryId}-standings`}
-                className="scroll-mt-28 rounded-[1.75rem] border border-violet-100 bg-white/70 p-0"
+                className="scroll-mt-28 rounded-[1.75rem] border border-emerald-100 bg-white/70 p-0"
               >
                 <div className="mb-5 flex flex-col gap-3 px-5 pt-5 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-500">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-500">
                       รอบการแข่งขัน
                     </p>
-                    <h3 className="mt-2 font-serif text-2xl text-violet-950">Standings</h3>
+                    <h3 className="mt-2 font-serif text-2xl text-emerald-950">Standings</h3>
                   </div>
-                  <span className="rounded-full bg-violet-100 px-4 py-2 text-sm font-semibold text-violet-700">
+                  <span className="rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
                     ลำดับถัดจากรอบ 5
                   </span>
                 </div>
@@ -578,18 +578,18 @@ export function ResultsBrowserV3({
                     return (
                       <article
                         key={document.id}
-                        className="rounded-[1.5rem] border-t border-violet-100 bg-white/90 p-0 shadow-[0_10px_28px_rgba(109,59,209,0.08)]"
+                        className="rounded-[1.5rem] border-t border-emerald-100 bg-white/90 p-0 shadow-[0_10px_28px_rgba(22,101,52,0.08)]"
                       >
                         <div className="mb-4 flex flex-col gap-2 px-5 pt-5 sm:flex-row sm:items-center sm:justify-between">
                           <div>
-                            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">
                               {document.roundLabel}
                             </p>
-                            <h4 className="mt-2 text-xl font-semibold text-violet-950">
+                            <h4 className="mt-2 text-xl font-semibold text-emerald-950">
                               {document.title}
                             </h4>
                           </div>
-                          <p className="text-sm text-violet-700/75">{document.sourceFileName}</p>
+                          <p className="text-sm text-emerald-700/75">{document.sourceFileName}</p>
                         </div>
 
                         {hasTournamentDocumentImage(document) ? (
@@ -603,7 +603,7 @@ export function ResultsBrowserV3({
                             <StandingsTable entries={entries} />
                           </div>
                         ) : (
-                          <pre className="mx-5 mb-5 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-violet-50/80 p-4 text-sm leading-7 text-violet-950">
+                          <pre className="mx-5 mb-5 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-emerald-50/80 p-4 text-sm leading-7 text-emerald-950">
                             {document.contentText || "ไม่มีข้อความในไฟล์ Standings"}
                           </pre>
                         )}
@@ -617,10 +617,10 @@ export function ResultsBrowserV3({
         </div>
 
         <div className="flex flex-col gap-8">
-          <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-0 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur">
+          <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-0 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur">
             <div className="px-6 pt-6 sm:px-8 sm:pt-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">ผู้เล่น</p>
-              <h2 className="mt-2 font-serif text-3xl text-violet-950">รายชื่อผู้เล่น</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">ผู้เล่น</p>
+              <h2 className="mt-2 font-serif text-3xl text-emerald-950">รายชื่อผู้เล่น</h2>
             </div>
             {activeCategory?.sharedDocuments.filter((document) => document.kind === "players").length ? (
               <div className="mt-6 grid gap-4">
@@ -631,7 +631,7 @@ export function ResultsBrowserV3({
                       key={document.id}
                       className={[
                         "bg-white/80 p-0",
-                        hasTournamentDocumentImage(document) ? "" : "border border-violet-100",
+                        hasTournamentDocumentImage(document) ? "" : "border border-emerald-100",
                       ].join(" ")}
                     >
                       {hasTournamentDocumentImage(document) ? (
@@ -646,32 +646,32 @@ export function ResultsBrowserV3({
                           {sharedPlayers.map((player, index) => (
                             <div
                               key={`${player}-${index}`}
-                              className="flex items-center gap-3 rounded-[1.1rem] border border-violet-100 bg-white/80 px-3.5 py-2.5"
+                              className="flex items-center gap-3 rounded-[1.1rem] border border-emerald-100 bg-white/80 px-3.5 py-2.5"
                             >
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e6d5ff,#c6a2ff)] text-xs font-bold text-violet-950">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#dcfce7,#86efac)] text-xs font-bold text-emerald-950">
                                 {String(index + 1).padStart(2, "0")}
                               </div>
-                              <p className="text-sm font-medium leading-6 text-violet-950">{player}</p>
+                              <p className="text-sm font-medium leading-6 text-emerald-950">{player}</p>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-violet-700/75">ยังไม่มีรายชื่อผู้เล่นที่เผยแพร่</p>
+                        <p className="text-sm text-emerald-700/75">ยังไม่มีรายชื่อผู้เล่นที่เผยแพร่</p>
                       )}
                     </article>
                   ))}
               </div>
             ) : (
-              <div className="mx-6 mb-6 mt-6 rounded-[1.5rem] border border-dashed border-violet-200 bg-white/60 px-5 py-10 text-center text-violet-700/75 sm:mx-8 sm:mb-8">
+              <div className="mx-6 mb-6 mt-6 rounded-[1.5rem] border border-dashed border-emerald-200 bg-white/60 px-5 py-10 text-center text-emerald-700/75 sm:mx-8 sm:mb-8">
                 ยังไม่มีรายชื่อผู้เล่นที่เผยแพร่
               </div>
             )}
           </section>
 
-          <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-0 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur">
+          <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-0 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur">
             <div className="px-6 pt-6 sm:px-8 sm:pt-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">ข้อมูลอื่น ๆ</p>
-              <h2 className="mt-2 font-serif text-3xl text-violet-950">ข้อมูลเพิ่มเติม</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">ข้อมูลอื่น ๆ</p>
+              <h2 className="mt-2 font-serif text-3xl text-emerald-950">ข้อมูลเพิ่มเติม</h2>
             </div>
             {otherDocuments.length ? (
               <div className="mt-6 grid gap-4">
@@ -682,7 +682,7 @@ export function ResultsBrowserV3({
                       "bg-white/80",
                       hasTournamentDocumentImage(document)
                         ? "overflow-hidden rounded-none border-0 p-0"
-                        : "rounded-[1.5rem] border border-violet-100 p-5",
+                        : "rounded-[1.5rem] border border-emerald-100 p-5",
                     ].join(" ")}
                   >
                     {hasTournamentDocumentImage(document) ? (
@@ -695,17 +695,17 @@ export function ResultsBrowserV3({
                     ) : (
                       <>
                         <div className="px-6 pb-6 sm:px-8 sm:pb-8">
-                        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">
                           {getTournamentDocumentKindLabel(document.kind)}
                         </p>
                         {document.roundLabel ? (
-                          <p className="mt-2 text-sm font-semibold text-violet-700">{document.roundLabel}</p>
+                          <p className="mt-2 text-sm font-semibold text-emerald-700">{document.roundLabel}</p>
                         ) : null}
-                        <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
-                        <p className="mt-2 text-sm text-violet-700/75">
+                        <h3 className="mt-2 text-xl font-semibold text-emerald-950">{document.title}</h3>
+                        <p className="mt-2 text-sm text-emerald-700/75">
                           {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
                         </p>
-                        <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-violet-50/80 p-4 text-sm leading-7 text-violet-950">
+                        <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-emerald-50/80 p-4 text-sm leading-7 text-emerald-950">
                           {document.contentText || "ไม่มีข้อความในเอกสาร"}
                         </pre>
                         </div>
@@ -715,7 +715,7 @@ export function ResultsBrowserV3({
                 ))}
               </div>
             ) : (
-              <div className="mx-6 mb-6 mt-6 rounded-[1.5rem] border border-dashed border-violet-200 bg-white/60 px-5 py-10 text-center text-violet-700/75 sm:mx-8 sm:mb-8">
+              <div className="mx-6 mb-6 mt-6 rounded-[1.5rem] border border-dashed border-emerald-200 bg-white/60 px-5 py-10 text-center text-emerald-700/75 sm:mx-8 sm:mb-8">
                 ยังไม่มีข้อมูลเพิ่มเติมที่เผยแพร่
               </div>
             )}
@@ -725,3 +725,4 @@ export function ResultsBrowserV3({
     </div>
   );
 }
+

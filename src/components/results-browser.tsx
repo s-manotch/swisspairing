@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { TournamentDashboard } from "@/components/tournament-dashboard";
@@ -44,13 +44,13 @@ export function ResultsBrowser({
   const playerList = parsedPlayers.length ? parsedPlayers : (previewData?.players ?? []);
 
   const statusLabel = !previewData
-    ? `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(activeRoundId)} ยังไม่มีผลการแข่งขันแบบ parsed`
-    : `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(activeRoundId)} - เผยแพร่จาก ${previewData.sourceFileName}`;
+    ? `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(activeRoundId)} เธขเธฑเธเนเธกเนเธกเธตเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธเนเธเธ parsed`
+    : `${getTournamentCategoryLabel(activeCategoryId)} - ${getTournamentRoundLabel(activeRoundId)} - เน€เธเธขเนเธเธฃเนเธเธฒเธ ${previewData.sourceFileName}`;
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">ประเภทการแข่งขัน</p>
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-4 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เธเธฃเธฐเน€เธ เธ—เธเธฒเธฃเนเธเนเธเธเธฑเธ</p>
         <div className="mt-4 flex flex-wrap gap-3">
           {tournamentCategories.map((category) => (
             <button
@@ -58,8 +58,8 @@ export function ResultsBrowser({
               className={[
                 "rounded-full border px-4 py-2 text-sm font-semibold transition",
                 category.id === activeCategoryId
-                  ? "border-violet-700 bg-violet-700 text-white"
-                  : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                  ? "border-emerald-700 bg-emerald-700 text-white"
+                  : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
               ].join(" ")}
               type="button"
               onClick={() => setActiveCategoryId(category.id)}
@@ -69,7 +69,7 @@ export function ResultsBrowser({
           ))}
         </div>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">รอบการแข่งขัน</p>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เธฃเธญเธเธเธฒเธฃเนเธเนเธเธเธฑเธ</p>
         <div className="mt-4 flex flex-wrap gap-3">
           {tournamentRounds.map((round) => {
             const hasDocuments = Boolean(
@@ -82,14 +82,14 @@ export function ResultsBrowser({
                 className={[
                   "rounded-full border px-4 py-2 text-sm font-semibold transition",
                   round.id === activeRoundId
-                    ? "border-violet-700 bg-violet-700 text-white"
-                    : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                    ? "border-emerald-700 bg-emerald-700 text-white"
+                    : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                 ].join(" ")}
                 type="button"
                 onClick={() => setActiveRoundId(round.id)}
               >
                 {round.label}
-                {hasDocuments ? "" : " (ยังไม่มีไฟล์)"}
+                {hasDocuments ? "" : " (เธขเธฑเธเนเธกเนเธกเธตเนเธเธฅเน)"}
               </button>
             );
           })}
@@ -101,20 +101,20 @@ export function ResultsBrowser({
         players={playerList}
         resultDocuments={resultDocuments}
         statusLabel={statusLabel}
-        emptyTitle={`ยังไม่มีผลการแข่งขัน ${getTournamentCategoryLabel(activeCategoryId)} ${getTournamentRoundLabel(activeRoundId)}`}
-        emptyDescription="เลือกประเภทและรอบด้านบนเพื่อดูผลการแข่งขันและเอกสารที่แอดมินอัปโหลดไว้"
+        emptyTitle={`เธขเธฑเธเนเธกเนเธกเธตเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ ${getTournamentCategoryLabel(activeCategoryId)} ${getTournamentRoundLabel(activeRoundId)}`}
+        emptyDescription="เน€เธฅเธทเธญเธเธเธฃเธฐเน€เธ เธ—เนเธฅเธฐเธฃเธญเธเธ”เนเธฒเธเธเธเน€เธเธทเนเธญเธ”เธนเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธเนเธฅเธฐเน€เธญเธเธชเธฒเธฃเธ—เธตเนเนเธญเธ”เธกเธดเธเธญเธฑเธเนเธซเธฅเธ”เนเธงเน"
       />
 
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-8">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสารเพิ่มเติม</p>
-            <h2 className="mt-2 font-serif text-3xl text-violet-950">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เน€เธญเธเธชเธฒเธฃเน€เธเธดเนเธกเน€เธ•เธดเธก</p>
+            <h2 className="mt-2 font-serif text-3xl text-emerald-950">
               {getTournamentCategoryLabel(activeCategoryId)} {getTournamentRoundLabel(activeRoundId)}
             </h2>
           </div>
-          <span className="rounded-full bg-violet-100 px-4 py-2 text-sm font-semibold text-violet-700">
-            {extraDocuments.length} ไฟล์
+          <span className="rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
+            {extraDocuments.length} เนเธเธฅเน
           </span>
         </div>
 
@@ -123,27 +123,28 @@ export function ResultsBrowser({
             {extraDocuments.map((document) => (
               <article
                 key={document.id}
-                className="rounded-[1.5rem] border border-violet-100 bg-white/80 p-5 shadow-[0_10px_28px_rgba(109,59,209,0.08)]"
+                className="rounded-[1.5rem] border border-emerald-100 bg-white/80 p-5 shadow-[0_10px_28px_rgba(22,101,52,0.08)]"
               >
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">
                   {getTournamentDocumentKindLabel(document.kind)}
                 </p>
-                <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
-                <p className="mt-2 text-sm text-violet-700/75">
-                  {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
+                <h3 className="mt-2 text-xl font-semibold text-emerald-950">{document.title}</h3>
+                <p className="mt-2 text-sm text-emerald-700/75">
+                  {document.sourceFileName} โ€ข {new Date(document.updatedAt).toLocaleString("th-TH")}
                 </p>
-                <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-violet-50/80 p-4 text-sm leading-7 text-violet-950">
-                  {document.contentText || "ไม่มีข้อความในเอกสาร"}
+                <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-emerald-50/80 p-4 text-sm leading-7 text-emerald-950">
+                  {document.contentText || "เนเธกเนเธกเธตเธเนเธญเธเธงเธฒเธกเนเธเน€เธญเธเธชเธฒเธฃ"}
                 </pre>
               </article>
             ))}
           </div>
         ) : (
-          <div className="mt-6 rounded-[1.5rem] border border-dashed border-violet-200 bg-white/60 px-5 py-10 text-center text-violet-700/75">
-            รอบนี้ยังไม่มีเอกสารที่เผยแพร่
+          <div className="mt-6 rounded-[1.5rem] border border-dashed border-emerald-200 bg-white/60 px-5 py-10 text-center text-emerald-700/75">
+            เธฃเธญเธเธเธตเนเธขเธฑเธเนเธกเนเธกเธตเน€เธญเธเธชเธฒเธฃเธ—เธตเนเน€เธเธขเนเธเธฃเน
           </div>
         )}
       </section>
     </div>
   );
 }
+

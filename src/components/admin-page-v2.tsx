@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { TournamentDashboard } from "@/components/tournament-dashboard";
@@ -78,7 +78,7 @@ async function readJsonSafely(response: Response) {
     return JSON.parse(text) as { error?: string };
   } catch {
     return {
-      error: response.ok ? "ระบบตอบกลับไม่ถูกต้อง" : `เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง (${response.status})`,
+      error: response.ok ? "เธฃเธฐเธเธเธ•เธญเธเธเธฅเธฑเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ" : `เน€เธเธดเธฃเนเธเน€เธงเธญเธฃเนเธ•เธญเธเธเธฅเธฑเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ (${response.status})`,
     };
   }
 }
@@ -107,7 +107,7 @@ async function uploadFileToStorage(file: File, storageGroup: string) {
     const chunkJson = await readJsonSafely(chunkResponse);
 
     if (!chunkResponse.ok) {
-      throw new Error(chunkJson.error ?? `อัปโหลดไฟล์ไม่สำเร็จที่ชิ้น ${chunkIndex + 1}`);
+      throw new Error(chunkJson.error ?? `เธญเธฑเธเนเธซเธฅเธ”เนเธเธฅเนเนเธกเนเธชเธณเน€เธฃเนเธเธ—เธตเนเธเธดเนเธ ${chunkIndex + 1}`);
     }
   }
 
@@ -133,7 +133,7 @@ async function uploadFileToStorage(file: File, storageGroup: string) {
   };
 
   if (!finalizeResponse.ok || !finalizeJson.fileBlobKey) {
-    throw new Error(finalizeJson.error ?? "บันทึกไฟล์ที่อัปโหลดไม่สำเร็จ");
+    throw new Error(finalizeJson.error ?? "เธเธฑเธเธ—เธถเธเนเธเธฅเนเธ—เธตเนเธญเธฑเธเนเธซเธฅเธ”เนเธกเนเธชเธณเน€เธฃเนเธ");
   }
 
   return {
@@ -154,10 +154,10 @@ function readFileAsDataUrl(file: File) {
         return;
       }
 
-      reject(new Error("ไม่สามารถอ่านไฟล์รูปภาพได้"));
+      reject(new Error("เนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธญเนเธฒเธเนเธเธฅเนเธฃเธนเธเธ เธฒเธเนเธ”เน"));
     };
 
-    reader.onerror = () => reject(new Error("ไม่สามารถอ่านไฟล์รูปภาพได้"));
+    reader.onerror = () => reject(new Error("เนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธญเนเธฒเธเนเธเธฅเนเธฃเธนเธเธ เธฒเธเนเธ”เน"));
     reader.readAsDataURL(file);
   });
 }
@@ -202,26 +202,26 @@ export function AdminPageV2() {
 
   const statusLabel = useMemo(() => {
     if (!previewData) {
-      return `${getTournamentCategoryLabel(selectedCategoryId)} • ${getTournamentRoundLabel(selectedRoundId)} ยังไม่มีพรีวิว`;
+      return `${getTournamentCategoryLabel(selectedCategoryId)} โ€ข ${getTournamentRoundLabel(selectedRoundId)} เธขเธฑเธเนเธกเนเธกเธตเธเธฃเธตเธงเธดเธง`;
     }
 
-    return `${getTournamentCategoryLabel(selectedCategoryId)} • ${getTournamentRoundLabel(selectedRoundId)} • เผยแพร่จาก ${previewData.sourceFileName}`;
+    return `${getTournamentCategoryLabel(selectedCategoryId)} โ€ข ${getTournamentRoundLabel(selectedRoundId)} โ€ข เน€เธเธขเนเธเธฃเนเธเธฒเธ ${previewData.sourceFileName}`;
   }, [previewData, selectedCategoryId, selectedRoundId]);
 
   const visibleDocumentKinds = useMemo(
     () => [
-      { id: "results" as const, label: "ผลการแข่งขัน" },
-      { id: "players" as const, label: "รายชื่อผู้เล่น" },
-      { id: "other" as const, label: "ข้อมูลอื่น ๆ" },
+      { id: "results" as const, label: "เธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ" },
+      { id: "players" as const, label: "เธฃเธฒเธขเธเธทเนเธญเธเธนเนเน€เธฅเนเธ" },
+      { id: "other" as const, label: "เธเนเธญเธกเธนเธฅเธญเธทเนเธ เน" },
     ],
     [],
   );
   const individualCategories = useMemo(
-    () => tournamentCategories.filter((category) => category.label.includes("บุคคล")),
+    () => tournamentCategories.filter((category) => category.label.includes("เธเธธเธเธเธฅ")),
     [],
   );
   const teamCategories = useMemo(
-    () => tournamentCategories.filter((category) => category.label.includes("ทีม")),
+    () => tournamentCategories.filter((category) => category.label.includes("เธ—เธตเธก")),
     [],
   );
 
@@ -239,7 +239,7 @@ export function AdminPageV2() {
     const json = (await response.json()) as { error?: string };
 
     if (!response.ok) {
-      setLoginError(json.error ?? "เข้าสู่ระบบไม่สำเร็จ");
+      setLoginError(json.error ?? "เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธเนเธกเนเธชเธณเน€เธฃเนเธ");
       setIsBusy(false);
       return;
     }
@@ -307,21 +307,21 @@ export function AdminPageV2() {
       const json = await readJsonSafely(response);
 
       if (!response.ok) {
-        throw new Error(json.error ?? "บันทึกข้อมูลไม่สำเร็จ");
+        throw new Error(json.error ?? "เธเธฑเธเธ—เธถเธเธเนเธญเธกเธนเธฅเนเธกเนเธชเธณเน€เธฃเนเธ");
       }
 
       const statusParts = [
-        `อัปโหลด ${files.length} ไฟล์ให้ ${getTournamentCategoryLabel(selectedCategoryId)}`,
+        `เธญเธฑเธเนเธซเธฅเธ” ${files.length} เนเธเธฅเนเนเธซเน ${getTournamentCategoryLabel(selectedCategoryId)}`,
         selectedDocumentKind === "players"
-          ? "(ข้อมูลส่วนกลางของทั้งประเภท)"
+          ? "(เธเนเธญเธกเธนเธฅเธชเนเธงเธเธเธฅเธฒเธเธเธญเธเธ—เธฑเนเธเธเธฃเธฐเน€เธ เธ—)"
           : getTournamentRoundLabel(selectedRoundId),
-        `ในหมวด ${getTournamentDocumentKindLabel(selectedDocumentKind)} เรียบร้อยแล้ว`,
+        `เนเธเธซเธกเธงเธ” ${getTournamentDocumentKindLabel(selectedDocumentKind)} เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง`,
       ];
 
       setStatus(statusParts.join(" "));
       await loadResults();
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "อัปโหลดไฟล์ไม่สำเร็จ");
+      setError(uploadError instanceof Error ? uploadError.message : "เธญเธฑเธเนเธซเธฅเธ”เนเธเธฅเนเนเธกเนเธชเธณเน€เธฃเนเธ");
     } finally {
       event.target.value = "";
       setIsBusy(false);
@@ -339,7 +339,7 @@ export function AdminPageV2() {
     }
 
     if (file.type !== "application/pdf") {
-      setError(`ไฟล์สำหรับ ${getPublicDocumentKindLabel(kind)} ต้องเป็น PDF เท่านั้น`);
+      setError(`เนเธเธฅเนเธชเธณเธซเธฃเธฑเธ ${getPublicDocumentKindLabel(kind)} เธ•เนเธญเธเน€เธเนเธ PDF เน€เธ—เนเธฒเธเธฑเนเธ`);
       event.target.value = "";
       return;
     }
@@ -373,13 +373,13 @@ export function AdminPageV2() {
       const json = await readJsonSafely(response);
 
       if (!response.ok) {
-        throw new Error(json.error ?? "อัปโหลดไฟล์ PDF ไม่สำเร็จ");
+        throw new Error(json.error ?? "เธญเธฑเธเนเธซเธฅเธ”เนเธเธฅเน PDF เนเธกเนเธชเธณเน€เธฃเนเธ");
       }
 
-      setStatus(`อัปโหลด ${getPublicDocumentKindLabel(kind)} เรียบร้อยแล้ว`);
+      setStatus(`เธญเธฑเธเนเธซเธฅเธ” ${getPublicDocumentKindLabel(kind)} เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง`);
       await loadResults();
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "อัปโหลดไฟล์ PDF ไม่สำเร็จ");
+      setError(uploadError instanceof Error ? uploadError.message : "เธญเธฑเธเนเธซเธฅเธ”เนเธเธฅเน PDF เนเธกเนเธชเธณเน€เธฃเนเธ");
     } finally {
       event.target.value = "";
       setIsBusy(false);
@@ -405,7 +405,7 @@ export function AdminPageV2() {
       const json = await readJsonSafely(response);
 
       if (!response.ok) {
-        throw new Error(json.error ?? "ลบไฟล์ไม่สำเร็จ");
+        throw new Error(json.error ?? "เธฅเธเนเธเธฅเนเนเธกเนเธชเธณเน€เธฃเนเธ");
       }
 
       setResults((currentResults) =>
@@ -416,12 +416,12 @@ export function AdminPageV2() {
           documentId,
         ),
       );
-      setStatus("ลบไฟล์รูปภาพออกจากรายการเรียบร้อยแล้ว");
+      setStatus("เธฅเธเนเธเธฅเนเธฃเธนเธเธ เธฒเธเธญเธญเธเธเธฒเธเธฃเธฒเธขเธเธฒเธฃเน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง");
       window.setTimeout(() => {
         void loadResults();
       }, 800);
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "ลบไฟล์ไม่สำเร็จ");
+      setError(deleteError instanceof Error ? deleteError.message : "เธฅเธเนเธเธฅเนเนเธกเนเธชเธณเน€เธฃเนเธ");
     } finally {
       setIsBusy(false);
     }
@@ -442,7 +442,7 @@ export function AdminPageV2() {
       const json = await readJsonSafely(response);
 
       if (!response.ok) {
-        throw new Error(json.error ?? "ลบไฟล์ PDF ไม่สำเร็จ");
+        throw new Error(json.error ?? "เธฅเธเนเธเธฅเน PDF เนเธกเนเธชเธณเน€เธฃเนเธ");
       }
 
       setPublicDocuments((currentDocuments) => {
@@ -450,28 +450,28 @@ export function AdminPageV2() {
         delete nextDocuments[kind];
         return nextDocuments;
       });
-      setStatus(`ลบ ${getPublicDocumentKindLabel(kind)} เรียบร้อยแล้ว`);
+      setStatus(`เธฅเธ ${getPublicDocumentKindLabel(kind)} เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง`);
       window.setTimeout(() => {
         void loadResults();
       }, 800);
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "ลบไฟล์ PDF ไม่สำเร็จ");
+      setError(deleteError instanceof Error ? deleteError.message : "เธฅเธเนเธเธฅเน PDF เนเธกเนเธชเธณเน€เธฃเนเธ");
     } finally {
       setIsBusy(false);
     }
   }
 
   if (!session) {
-    return <div className="rounded-[2rem] bg-white/70 p-8 text-violet-900">กำลังโหลด...</div>;
+    return <div className="rounded-[2rem] bg-white/70 p-8 text-emerald-900">เธเธณเธฅเธฑเธเนเธซเธฅเธ”...</div>;
   }
 
   if (!session.configured) {
     return (
       <div className="mx-auto w-full max-w-3xl rounded-[2rem] border border-amber-200 bg-amber-50 p-8 text-amber-900 shadow-sm">
-        <h1 className="font-serif text-4xl">ตั้งค่ารหัสผ่านแอดมินก่อนใช้งาน</h1>
+        <h1 className="font-serif text-4xl">เธ•เธฑเนเธเธเนเธฒเธฃเธซเธฑเธชเธเนเธฒเธเนเธญเธ”เธกเธดเธเธเนเธญเธเนเธเนเธเธฒเธ</h1>
         <p className="mt-4 text-base leading-7">
-          กรุณาสร้างไฟล์ <code>.env.local</code> แล้วเพิ่มค่า <code>ADMIN_PASSWORD=รหัสผ่านของคุณ</code>
-          จากนั้นรีสตาร์ตเซิร์ฟเวอร์ Next.js
+          เธเธฃเธธเธ“เธฒเธชเธฃเนเธฒเธเนเธเธฅเน <code>.env.local</code> เนเธฅเนเธงเน€เธเธดเนเธกเธเนเธฒ <code>ADMIN_PASSWORD=เธฃเธซเธฑเธชเธเนเธฒเธเธเธญเธเธเธธเธ“</code>
+          เธเธฒเธเธเธฑเนเธเธฃเธตเธชเธ•เธฒเธฃเนเธ•เน€เธเธดเธฃเนเธเน€เธงเธญเธฃเน Next.js
         </p>
       </div>
     );
@@ -479,24 +479,24 @@ export function AdminPageV2() {
 
   if (!session.authenticated) {
     return (
-      <div className="mx-auto w-full max-w-3xl rounded-[2rem] border border-white/60 bg-[var(--surface)] p-8 shadow-[0_24px_80px_rgba(109,59,209,0.18)] backdrop-blur">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Admin Access</p>
-        <h1 className="mt-2 font-serif text-4xl text-violet-950">เข้าสู่ระบบแอดมิน</h1>
-        <p className="mt-4 text-violet-900/70">หน้านี้ใช้สำหรับอัปเดตไฟล์ผลการแข่งขันที่จะเผยแพร่ให้ผู้ชมเห็น</p>
+      <div className="mx-auto w-full max-w-3xl rounded-[2rem] border border-white/60 bg-[var(--surface)] p-8 shadow-[0_24px_80px_rgba(22,101,52,0.18)] backdrop-blur">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">Admin Access</p>
+        <h1 className="mt-2 font-serif text-4xl text-emerald-950">เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธเนเธญเธ”เธกเธดเธ</h1>
+        <p className="mt-4 text-emerald-900/70">เธซเธเนเธฒเธเธตเนเนเธเนเธชเธณเธซเธฃเธฑเธเธญเธฑเธเน€เธ”เธ•เนเธเธฅเนเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธเธ—เธตเนเธเธฐเน€เธเธขเนเธเธฃเนเนเธซเนเธเธนเนเธเธกเน€เธซเนเธ</p>
         <form className="mt-8 flex flex-col gap-4" onSubmit={handleLogin}>
           <input
-            className="rounded-2xl border border-violet-200 bg-white px-4 py-3 text-base outline-none ring-0 placeholder:text-violet-300"
+            className="rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-base outline-none ring-0 placeholder:text-emerald-300"
             type="password"
-            placeholder="กรอกรหัสผ่านแอดมิน"
+            placeholder="เธเธฃเธญเธเธฃเธซเธฑเธชเธเนเธฒเธเนเธญเธ”เธกเธดเธ"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
           <button
-            className="rounded-full bg-violet-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
             type="submit"
             disabled={isBusy || !password.trim()}
           >
-            เข้าสู่ระบบ
+            เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธ
           </button>
         </form>
         {loginError ? (
@@ -508,41 +508,41 @@ export function AdminPageV2() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Admin Panel</p>
-            <h1 className="mt-2 font-serif text-4xl text-violet-950">อัปเดตข้อมูลการแข่งขัน</h1>
-            <p className="mt-4 max-w-2xl text-violet-900/70">
-              แต่ละประเภทมี 5 รอบ และในแต่ละรอบคุณสามารถอัปโหลดไฟล์รูปภาพได้หลายไฟล์ เช่นผลการแข่งขัน รายชื่อผู้เล่น Standings และข้อมูลอื่น ๆ
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">Admin Panel</p>
+            <h1 className="mt-2 font-serif text-4xl text-emerald-950">เธญเธฑเธเน€เธ”เธ•เธเนเธญเธกเธนเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ</h1>
+            <p className="mt-4 max-w-2xl text-emerald-900/70">
+              เนเธ•เนเธฅเธฐเธเธฃเธฐเน€เธ เธ—เธกเธต 5 เธฃเธญเธ เนเธฅเธฐเนเธเนเธ•เนเธฅเธฐเธฃเธญเธเธเธธเธ“เธชเธฒเธกเธฒเธฃเธ–เธญเธฑเธเนเธซเธฅเธ”เนเธเธฅเนเธฃเธนเธเธ เธฒเธเนเธ”เนเธซเธฅเธฒเธขเนเธเธฅเน เน€เธเนเธเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ เธฃเธฒเธขเธเธทเนเธญเธเธนเนเน€เธฅเนเธ Standings เนเธฅเธฐเธเนเธญเธกเธนเธฅเธญเธทเนเธ เน
             </p>
           </div>
           <div className="flex gap-3">
-            <a className="rounded-full border border-violet-200 px-5 py-3 text-sm font-semibold text-violet-800 transition hover:bg-violet-50" href="/results">
-              ดูหน้าสาธารณะ
+            <a className="rounded-full border border-emerald-200 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50" href="/results">
+              เธ”เธนเธซเธเนเธฒเธชเธฒเธเธฒเธฃเธ“เธฐ
             </a>
             <button
-              className="rounded-full bg-violet-100 px-5 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-200 disabled:opacity-60"
+              className="rounded-full bg-emerald-100 px-5 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200 disabled:opacity-60"
               type="button"
               onClick={handleLogout}
               disabled={isBusy}
             >
-              ออกจากระบบ
+              เธญเธญเธเธเธฒเธเธฃเธฐเธเธ
             </button>
           </div>
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เผยแพร่ข้อมูล</p>
-        <h2 className="mt-2 font-serif text-3xl text-violet-950">เลือกประเภท รอบ และชนิดข้อมูล</h2>
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เน€เธเธขเนเธเธฃเนเธเนเธญเธกเธนเธฅ</p>
+        <h2 className="mt-2 font-serif text-3xl text-emerald-950">เน€เธฅเธทเธญเธเธเธฃเธฐเน€เธ เธ— เธฃเธญเธ เนเธฅเธฐเธเธเธดเธ”เธเนเธญเธกเธนเธฅ</h2>
 
         <div className="mt-6 space-y-6">
           <div>
-            <label className="mb-3 block text-sm font-semibold text-violet-900">ประเภทการแข่งขัน</label>
+            <label className="mb-3 block text-sm font-semibold text-emerald-900">เธเธฃเธฐเน€เธ เธ—เธเธฒเธฃเนเธเนเธเธเธฑเธ</label>
             <div className="grid gap-4">
               <div>
-                <p className="mb-3 text-sm font-semibold text-violet-700">บุคคล</p>
+                <p className="mb-3 text-sm font-semibold text-emerald-700">เธเธธเธเธเธฅ</p>
                 <div className="flex flex-wrap gap-3">
                   {individualCategories.map((category) => (
                     <button
@@ -550,8 +550,8 @@ export function AdminPageV2() {
                       className={[
                         "rounded-full border px-4 py-2 text-sm font-semibold transition",
                         category.id === selectedCategoryId
-                          ? "border-violet-700 bg-violet-700 text-white"
-                          : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                          ? "border-emerald-700 bg-emerald-700 text-white"
+                          : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                       ].join(" ")}
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
@@ -562,7 +562,7 @@ export function AdminPageV2() {
                 </div>
               </div>
               <div>
-                <p className="mb-3 text-sm font-semibold text-violet-700">ทีม</p>
+                <p className="mb-3 text-sm font-semibold text-emerald-700">เธ—เธตเธก</p>
                 <div className="flex flex-wrap gap-3">
                   {teamCategories.map((category) => (
                     <button
@@ -570,8 +570,8 @@ export function AdminPageV2() {
                       className={[
                         "rounded-full border px-4 py-2 text-sm font-semibold transition",
                         category.id === selectedCategoryId
-                          ? "border-violet-700 bg-violet-700 text-white"
-                          : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                          ? "border-emerald-700 bg-emerald-700 text-white"
+                          : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                       ].join(" ")}
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
@@ -585,7 +585,7 @@ export function AdminPageV2() {
           </div>
 
           <div>
-            <label className="mb-3 block text-sm font-semibold text-violet-900">รอบการแข่งขัน</label>
+            <label className="mb-3 block text-sm font-semibold text-emerald-900">เธฃเธญเธเธเธฒเธฃเนเธเนเธเธเธฑเธ</label>
             <div className="flex flex-wrap gap-3">
               {tournamentRounds.map((round) => (
                 <button
@@ -593,8 +593,8 @@ export function AdminPageV2() {
                   className={[
                     "rounded-full border px-4 py-2 text-sm font-semibold transition",
                     round.id === selectedRoundId && selectedDocumentKind !== "standings"
-                      ? "border-violet-700 bg-violet-700 text-white"
-                      : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                      ? "border-emerald-700 bg-emerald-700 text-white"
+                      : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                   ].join(" ")}
                   type="button"
                   onClick={() => {
@@ -611,8 +611,8 @@ export function AdminPageV2() {
                 className={[
                   "rounded-full border px-4 py-2 text-sm font-semibold transition",
                   selectedDocumentKind === "standings"
-                    ? "border-violet-700 bg-violet-700 text-white"
-                    : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                    ? "border-emerald-700 bg-emerald-700 text-white"
+                    : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                 ].join(" ")}
                 type="button"
                 onClick={() => setSelectedDocumentKind("standings")}
@@ -623,7 +623,7 @@ export function AdminPageV2() {
           </div>
 
           <div>
-            <label className="mb-3 block text-sm font-semibold text-violet-900">ชนิดข้อมูล</label>
+            <label className="mb-3 block text-sm font-semibold text-emerald-900">เธเธเธดเธ”เธเนเธญเธกเธนเธฅ</label>
             <div className="flex flex-wrap gap-3">
               {visibleDocumentKinds.map((kind) => (
                 <button
@@ -631,8 +631,8 @@ export function AdminPageV2() {
                   className={[
                     "rounded-full border px-4 py-2 text-sm font-semibold transition",
                     kind.id === selectedDocumentKind
-                      ? "border-violet-700 bg-violet-700 text-white"
-                      : "border-violet-200 bg-white text-violet-800 hover:bg-violet-50",
+                      ? "border-emerald-700 bg-emerald-700 text-white"
+                      : "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-50",
                   ].join(" ")}
                   type="button"
                   onClick={() => setSelectedDocumentKind(kind.id)}
@@ -644,21 +644,21 @@ export function AdminPageV2() {
           </div>
         </div>
 
-        <label className="mt-8 flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-violet-300 bg-white/75 px-6 py-8 text-center transition hover:border-violet-500 hover:bg-white">
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">เลือกไฟล์หลายไฟล์</span>
-          <span className="mt-3 font-serif text-2xl text-violet-950">
-            อัปโหลด {getTournamentDocumentKindLabel(selectedDocumentKind)} สำหรับ{" "}
+        <label className="mt-8 flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-emerald-300 bg-white/75 px-6 py-8 text-center transition hover:border-emerald-500 hover:bg-white">
+          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">เน€เธฅเธทเธญเธเนเธเธฅเนเธซเธฅเธฒเธขเนเธเธฅเน</span>
+          <span className="mt-3 font-serif text-2xl text-emerald-950">
+            เธญเธฑเธเนเธซเธฅเธ” {getTournamentDocumentKindLabel(selectedDocumentKind)} เธชเธณเธซเธฃเธฑเธ{" "}
             {getTournamentCategoryLabel(selectedCategoryId)}{" "}
             {selectedDocumentKind === "players"
-              ? "(ใช้ร่วมกันทุก รอบ)"
+              ? "(เนเธเนเธฃเนเธงเธกเธเธฑเธเธ—เธธเธ เธฃเธญเธ)"
               : getTournamentRoundLabel(selectedRoundId)}
           </span>
-          <span className="mt-3 text-sm text-violet-900/65">
+          <span className="mt-3 text-sm text-emerald-900/65">
             {selectedDocumentKind === "players"
-              ? "รายชื่อผู้เล่นเป็นข้อมูลเดียวกันทั้งการแข่งขัน อัปโหลดครั้งเดียวก็พอ"
+              ? "เธฃเธฒเธขเธเธทเนเธญเธเธนเนเน€เธฅเนเธเน€เธเนเธเธเนเธญเธกเธนเธฅเน€เธ”เธตเธขเธงเธเธฑเธเธ—เธฑเนเธเธเธฒเธฃเนเธเนเธเธเธฑเธ เธญเธฑเธเนเธซเธฅเธ”เธเธฃเธฑเนเธเน€เธ”เธตเธขเธงเธเนเธเธญ"
               : selectedDocumentKind === "standings"
-                ? "ใช้สำหรับอัปโหลดรูปภาพสรุปผลการแข่งขัน และระบบจะแสดงต่อท้ายในช่องผลการแข่งขัน"
-                : "ถ้าเลือกหมวดผลการแข่งขัน ระบบจะเก็บรูปภาพไว้เพื่อแสดงบนหน้าเว็บ"}
+                ? "เนเธเนเธชเธณเธซเธฃเธฑเธเธญเธฑเธเนเธซเธฅเธ”เธฃเธนเธเธ เธฒเธเธชเธฃเธธเธเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ เนเธฅเธฐเธฃเธฐเธเธเธเธฐเนเธชเธ”เธเธ•เนเธญเธ—เนเธฒเธขเนเธเธเนเธญเธเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ"
+                : "เธ–เนเธฒเน€เธฅเธทเธญเธเธซเธกเธงเธ”เธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ เธฃเธฐเธเธเธเธฐเน€เธเนเธเธฃเธนเธเธ เธฒเธเนเธงเนเน€เธเธทเนเธญเนเธชเธ”เธเธเธเธซเธเนเธฒเน€เธงเนเธ"}
           </span>
           <input
             className="sr-only"
@@ -673,16 +673,16 @@ export function AdminPageV2() {
         {error ? <p className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p> : null}
       </section>
 
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-8">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสารในรอบนี้</p>
-            <h2 className="mt-2 font-serif text-3xl text-violet-950">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เน€เธญเธเธชเธฒเธฃเนเธเธฃเธญเธเธเธตเน</p>
+            <h2 className="mt-2 font-serif text-3xl text-emerald-950">
               {getTournamentCategoryLabel(selectedCategoryId)} {getTournamentRoundLabel(selectedRoundId)}
             </h2>
           </div>
-          <span className="rounded-full bg-violet-100 px-4 py-2 text-sm font-semibold text-violet-700">
-            {visibleDocuments.length} ไฟล์
+          <span className="rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
+            {visibleDocuments.length} เนเธเธฅเน
           </span>
         </div>
 
@@ -691,20 +691,20 @@ export function AdminPageV2() {
             {visibleDocuments.map((document) => (
               <article
                 key={document.id}
-                className="rounded-[1.5rem] border border-violet-100 bg-white/80 p-5"
+                className="rounded-[1.5rem] border border-emerald-100 bg-white/80 p-5"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">
                       {getTournamentDocumentKindLabel(document.kind)}
                     </p>
-                    <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
-                    <p className="mt-2 text-sm text-violet-700/75">
-                      {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
+                    <h3 className="mt-2 text-xl font-semibold text-emerald-950">{document.title}</h3>
+                    <p className="mt-2 text-sm text-emerald-700/75">
+                      {document.sourceFileName} โ€ข {new Date(document.updatedAt).toLocaleString("th-TH")}
                     </p>
                   </div>
-                  <span className="rounded-full bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
-                    {document.parsedData ? "มีข้อมูลแข่งขัน" : "เอกสารทั่วไป"}
+                  <span className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+                    {document.parsedData ? "เธกเธตเธเนเธญเธกเธนเธฅเนเธเนเธเธเธฑเธ" : "เน€เธญเธเธชเธฒเธฃเธ—เธฑเนเธงเนเธ"}
                   </span>
                 </div>
                 <div className="mt-4 flex justify-end">
@@ -714,24 +714,24 @@ export function AdminPageV2() {
                     onClick={() => void handleDeleteDocument(document.id)}
                     disabled={isBusy}
                   >
-                    ลบไฟล์นี้
+                    เธฅเธเนเธเธฅเนเธเธตเน
                   </button>
                 </div>
               </article>
             ))}
           </div>
         ) : (
-          <div className="mt-6 rounded-[1.5rem] border border-dashed border-violet-200 bg-white/60 px-5 py-10 text-center text-violet-700/75">
-            รอบนี้ยังไม่มีไฟล์ที่อัปโหลด
+          <div className="mt-6 rounded-[1.5rem] border border-dashed border-emerald-200 bg-white/60 px-5 py-10 text-center text-emerald-700/75">
+            เธฃเธญเธเธเธตเนเธขเธฑเธเนเธกเนเธกเธตเนเธเธฅเนเธ—เธตเนเธญเธฑเธเนเธซเธฅเธ”
           </div>
         )}
       </section>
 
-      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสาร PDF ส่วนกลาง</p>
-        <h2 className="mt-2 font-serif text-3xl text-violet-950">ระเบียบการแข่งขัน สูจิบัติ และกำหนดการแข่งขัน</h2>
-        <p className="mt-4 max-w-3xl text-violet-900/70">
-          ทั้ง 3 ช่องนี้ใช้สำหรับอัปโหลดไฟล์ PDF ให้ผู้ใช้งานทั่วไปกดดาวน์โหลดจากหน้าสาธารณะได้โดยตรง
+      <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(22,101,52,0.12)] backdrop-blur sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">เน€เธญเธเธชเธฒเธฃ PDF เธชเนเธงเธเธเธฅเธฒเธ</p>
+        <h2 className="mt-2 font-serif text-3xl text-emerald-950">เธฃเธฐเน€เธเธตเธขเธเธเธฒเธฃเนเธเนเธเธเธฑเธ เธชเธนเธเธดเธเธฑเธ•เธด เนเธฅเธฐเธเธณเธซเธเธ”เธเธฒเธฃเนเธเนเธเธเธฑเธ</h2>
+        <p className="mt-4 max-w-3xl text-emerald-900/70">
+          เธ—เธฑเนเธ 3 เธเนเธญเธเธเธตเนเนเธเนเธชเธณเธซเธฃเธฑเธเธญเธฑเธเนเธซเธฅเธ”เนเธเธฅเน PDF เนเธซเนเธเธนเนเนเธเนเธเธฒเธเธ—เธฑเนเธงเนเธเธเธ”เธ”เธฒเธงเธเนเนเธซเธฅเธ”เธเธฒเธเธซเธเนเธฒเธชเธฒเธเธฒเธฃเธ“เธฐเนเธ”เนเนเธ”เธขเธ•เธฃเธ
         </p>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
@@ -741,22 +741,22 @@ export function AdminPageV2() {
             return (
               <article
                 key={kind.id}
-                className="rounded-[1.5rem] border border-violet-100 bg-white/80 p-5"
+                className="rounded-[1.5rem] border border-emerald-100 bg-white/80 p-5"
               >
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-500">
                   PDF Upload
                 </p>
-                <h3 className="mt-2 text-xl font-semibold text-violet-950">
+                <h3 className="mt-2 text-xl font-semibold text-emerald-950">
                   {getPublicDocumentKindLabel(kind.id)}
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-violet-700/75">
-                  อัปโหลดได้เฉพาะไฟล์ `.pdf` และระบบจะส่งไฟล์เป็นหลายช่วงเพื่อรองรับไฟล์ใหญ่ขึ้น
+                <p className="mt-3 text-sm leading-6 text-emerald-700/75">
+                  เธญเธฑเธเนเธซเธฅเธ”เนเธ”เนเน€เธเธเธฒเธฐเนเธเธฅเน `.pdf` เนเธฅเธฐเธฃเธฐเธเธเธเธฐเธชเนเธเนเธเธฅเนเน€เธเนเธเธซเธฅเธฒเธขเธเนเธงเธเน€เธเธทเนเธญเธฃเธญเธเธฃเธฑเธเนเธเธฅเนเนเธซเธเนเธเธถเนเธ
                 </p>
 
-                <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-violet-300 bg-violet-50/40 px-4 py-6 text-center transition hover:border-violet-500 hover:bg-white">
-                  <span className="text-sm font-semibold text-violet-700">เลือกไฟล์ PDF</span>
-                  <span className="mt-2 text-xs text-violet-700/70">
-                    คลิกเพื่ออัปโหลด {getPublicDocumentKindLabel(kind.id)}
+                <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-emerald-300 bg-emerald-50/40 px-4 py-6 text-center transition hover:border-emerald-500 hover:bg-white">
+                  <span className="text-sm font-semibold text-emerald-700">เน€เธฅเธทเธญเธเนเธเธฅเน PDF</span>
+                  <span className="mt-2 text-xs text-emerald-700/70">
+                    เธเธฅเธดเธเน€เธเธทเนเธญเธญเธฑเธเนเธซเธฅเธ” {getPublicDocumentKindLabel(kind.id)}
                   </span>
                   <input
                     className="sr-only"
@@ -768,18 +768,18 @@ export function AdminPageV2() {
                 </label>
 
                 {document ? (
-                  <div className="mt-5 rounded-[1.25rem] border border-violet-100 bg-violet-50/50 p-4">
-                    <p className="text-sm font-semibold text-violet-950">{document.sourceFileName}</p>
-                    <p className="mt-2 text-sm text-violet-700/75">
-                      อัปเดตล่าสุด {new Date(document.updatedAt).toLocaleString("th-TH")}
+                  <div className="mt-5 rounded-[1.25rem] border border-emerald-100 bg-emerald-50/50 p-4">
+                    <p className="text-sm font-semibold text-emerald-950">{document.sourceFileName}</p>
+                    <p className="mt-2 text-sm text-emerald-700/75">
+                      เธญเธฑเธเน€เธ”เธ•เธฅเนเธฒเธชเธธเธ” {new Date(document.updatedAt).toLocaleString("th-TH")}
                     </p>
                     <div className="mt-4 flex flex-wrap gap-3">
                       <a
                         href={getPublicDocumentDownloadUrl(document) ?? "#"}
                         download={document.sourceFileName}
-                        className="rounded-full border border-violet-200 px-4 py-2 text-sm font-semibold text-violet-800 transition hover:bg-white"
+                        className="rounded-full border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-white"
                       >
-                        ดาวน์โหลดไฟล์ปัจจุบัน
+                        เธ”เธฒเธงเธเนเนเธซเธฅเธ”เนเธเธฅเนเธเธฑเธเธเธธเธเธฑเธ
                       </a>
                       <button
                         className="rounded-full border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
@@ -787,13 +787,13 @@ export function AdminPageV2() {
                         onClick={() => void handleDeletePublicDocument(kind.id)}
                         disabled={isBusy}
                       >
-                        ลบไฟล์นี้
+                        เธฅเธเนเธเธฅเนเธเธตเน
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="mt-5 rounded-[1.25rem] border border-dashed border-violet-200 bg-white/60 px-4 py-6 text-center text-sm text-violet-700/75">
-                    ยังไม่มีไฟล์ PDF ในหัวข้อนี้
+                  <div className="mt-5 rounded-[1.25rem] border border-dashed border-emerald-200 bg-white/60 px-4 py-6 text-center text-sm text-emerald-700/75">
+                    เธขเธฑเธเนเธกเนเธกเธตเนเธเธฅเน PDF เนเธเธซเธฑเธงเธเนเธญเธเธตเน
                   </div>
                 )}
               </article>
@@ -805,9 +805,10 @@ export function AdminPageV2() {
       <TournamentDashboard
         data={previewData}
         statusLabel={statusLabel}
-        emptyTitle={`ยังไม่มีผลการแข่งขัน ${getTournamentCategoryLabel(selectedCategoryId)} ${getTournamentRoundLabel(selectedRoundId)}`}
-        emptyDescription="ถ้ารอบนี้มีไฟล์ผลการแข่งขันแบบ Swiss Perfect ระบบจะแสดงพรีวิวการแข่งขันตรงนี้โดยอัตโนมัติ"
+        emptyTitle={`เธขเธฑเธเนเธกเนเธกเธตเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธ ${getTournamentCategoryLabel(selectedCategoryId)} ${getTournamentRoundLabel(selectedRoundId)}`}
+        emptyDescription="เธ–เนเธฒเธฃเธญเธเธเธตเนเธกเธตเนเธเธฅเนเธเธฅเธเธฒเธฃเนเธเนเธเธเธฑเธเนเธเธ Swiss Perfect เธฃเธฐเธเธเธเธฐเนเธชเธ”เธเธเธฃเธตเธงเธดเธงเธเธฒเธฃเนเธเนเธเธเธฑเธเธ•เธฃเธเธเธตเนเนเธ”เธขเธญเธฑเธ•เนเธเธกเธฑเธ•เธด"
       />
     </div>
   );
 }
+

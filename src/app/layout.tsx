@@ -24,9 +24,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TestSwiss | Open Round 5",
-  description:
-    "Open Round 5 pairing and results rendered from the imported HTML data.",
+  title: "TestSwiss | ระบบแสดงผลการแข่งขัน",
+  description: "ระบบแสดงผลการแข่งขันสาธารณะและระบบจัดการข้อมูลสำหรับแอดมิน",
 };
 
 export default function RootLayout({
