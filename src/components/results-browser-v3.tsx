@@ -227,8 +227,24 @@ export function ResultsBrowserV3({
       return [];
     }
 
-    return activeCategory.sharedDocuments.filter((document) => document.kind !== "players");
-  }, [activeCategory]);
+    const sharedOtherDocuments = activeCategory.sharedDocuments
+      .filter((document) => document.kind === "other")
+      .map((document) => ({
+        ...document,
+        roundLabel: null as string | null,
+      }));
+
+    const roundOtherDocuments = visibleRounds.flatMap((round) =>
+      (activeCategory.rounds[round.id]?.documents ?? [])
+        .filter((document) => document.kind === "other")
+        .map((document) => ({
+          ...document,
+          roundLabel: getTournamentRoundLabel(round.id),
+        })),
+    );
+
+    return [...sharedOtherDocuments, ...roundOtherDocuments];
+  }, [activeCategory, visibleRounds]);
 
   const standingsDocuments = useMemo(() => {
     if (!activeCategory) {
@@ -673,6 +689,9 @@ export function ResultsBrowserV3({
                     <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
                       {getTournamentDocumentKindLabel(document.kind)}
                     </p>
+                    {document.roundLabel ? (
+                      <p className="mt-2 text-sm font-semibold text-violet-700">{document.roundLabel}</p>
+                    ) : null}
                     <h3 className="mt-2 text-xl font-semibold text-violet-950">{document.title}</h3>
                     <p className="mt-2 text-sm text-violet-700/75">
                       {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
