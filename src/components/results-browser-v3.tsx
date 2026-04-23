@@ -276,14 +276,9 @@ export function ResultsBrowserV3({
   return (
     <div className="flex flex-col gap-8">
       <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-5 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสารสำหรับผู้ใช้งานทั่วไป</p>
-            <h2 className="mt-2 font-serif text-2xl text-violet-950">เอกสารสำหรับดาวน์โหลด</h2>
-          </div>
-          <p className="max-w-xl text-sm leading-6 text-violet-900/65">
-            ส่วนนี้ถูกย่อให้กระชับและคงไว้เฉพาะการดาวน์โหลดไฟล์ PDF สำหรับผู้ใช้งานทั่วไป
-          </p>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">เอกสารสำหรับผู้ใช้งานทั่วไป</p>
+          <h2 className="mt-2 font-serif text-2xl text-violet-950">เอกสารสำหรับดาวน์โหลด</h2>
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-3">
@@ -332,9 +327,6 @@ export function ResultsBrowserV3({
           ประเภทการแข่งขัน
         </p>
         <h2 className="mt-2 font-serif text-3xl text-violet-950 sm:text-4xl">เลือกประเภทที่ต้องการดูผลการแข่งขัน</h2>
-        <p className="mt-3 max-w-3xl text-base leading-7 text-violet-900/70">
-          ส่วนนี้ถูกขยายให้ใช้งานบ่อยได้สะดวกขึ้น คุณสามารถสลับประเภทการแข่งขันและกดไปยังรอบที่ต้องการได้ทันที
-        </p>
 
         <div className="mt-6 grid gap-5">
           <div>
@@ -676,9 +668,11 @@ export function ResultsBrowserV3({
             )}
           </section>
 
-          <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-6 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">ข้อมูลอื่น ๆ</p>
-            <h2 className="mt-2 font-serif text-3xl text-violet-950">ข้อมูลเพิ่มเติม</h2>
+          <section className="rounded-[2rem] border border-white/60 bg-[var(--surface)] p-0 shadow-[0_18px_60px_rgba(109,59,209,0.12)] backdrop-blur">
+            <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">ข้อมูลอื่น ๆ</p>
+              <h2 className="mt-2 font-serif text-3xl text-violet-950">ข้อมูลเพิ่มเติม</h2>
+            </div>
             {otherDocuments.length ? (
               <div className="mt-6 grid gap-4">
                 {otherDocuments.map((document) => (
@@ -700,6 +694,7 @@ export function ResultsBrowserV3({
                       />
                     ) : (
                       <>
+                        <div className="px-6 pb-6 sm:px-8 sm:pb-8">
                         <p className="text-sm font-semibold uppercase tracking-[0.25em] text-violet-500">
                           {getTournamentDocumentKindLabel(document.kind)}
                         </p>
@@ -713,13 +708,14 @@ export function ResultsBrowserV3({
                         <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-[1.25rem] bg-violet-50/80 p-4 text-sm leading-7 text-violet-950">
                           {document.contentText || "ไม่มีข้อความในเอกสาร"}
                         </pre>
+                        </div>
                       </>
                     )}
                   </article>
                 ))}
               </div>
             ) : (
-              <div className="mt-6 rounded-[1.5rem] border border-dashed border-violet-200 bg-white/60 px-5 py-10 text-center text-violet-700/75">
+              <div className="mx-6 mb-6 mt-6 rounded-[1.5rem] border border-dashed border-violet-200 bg-white/60 px-5 py-10 text-center text-violet-700/75 sm:mx-8 sm:mb-8">
                 ยังไม่มีข้อมูลเพิ่มเติมที่เผยแพร่
               </div>
             )}
