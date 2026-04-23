@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { TournamentDashboard } from "@/components/tournament-dashboard";
 import {
+  getPublicDocumentDownloadUrl,
   getPublicDocumentKindLabel,
   getCategoryDocumentsForRound,
   getTournamentCategoryLabel,
@@ -19,6 +20,8 @@ import {
   tournamentCategories,
   tournamentRounds,
 } from "@/lib/tournament";
+
+const uploadChunkSize = 3 * 1024 * 1024;
 
 type SessionResponse = {
   configured: boolean;
@@ -78,6 +81,67 @@ async function readJsonSafely(response: Response) {
       error: response.ok ? "ระบบตอบกลับไม่ถูกต้อง" : `เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง (${response.status})`,
     };
   }
+}
+
+async function uploadFileToStorage(file: File, storageGroup: string) {
+  const uploadId = `${Date.now()}-${crypto.randomUUID()}`;
+  const updatedAt = new Date().toISOString();
+  const totalChunks = Math.max(1, Math.ceil(file.size / uploadChunkSize));
+
+  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex += 1) {
+    const chunk = file.slice(chunkIndex * uploadChunkSize, (chunkIndex + 1) * uploadChunkSize);
+    const formData = new FormData();
+    formData.set("action", "chunk");
+    formData.set("uploadId", uploadId);
+    formData.set("fileName", file.name);
+    formData.set("contentType", file.type || "application/octet-stream");
+    formData.set("updatedAt", updatedAt);
+    formData.set("totalSize", String(file.size));
+    formData.set("chunkIndex", String(chunkIndex));
+    formData.set("chunk", chunk, file.name);
+
+    const chunkResponse = await fetch("/api/admin/file-uploads", {
+      method: "POST",
+      body: formData,
+    });
+    const chunkJson = await readJsonSafely(chunkResponse);
+
+    if (!chunkResponse.ok) {
+      throw new Error(chunkJson.error ?? `อัปโหลดไฟล์ไม่สำเร็จที่ชิ้น ${chunkIndex + 1}`);
+    }
+  }
+
+  const finalizeFormData = new FormData();
+  finalizeFormData.set("action", "finalize");
+  finalizeFormData.set("uploadId", uploadId);
+  finalizeFormData.set("storageGroup", storageGroup);
+  finalizeFormData.set("fileName", file.name);
+  finalizeFormData.set("contentType", file.type || "application/octet-stream");
+  finalizeFormData.set("updatedAt", updatedAt);
+  finalizeFormData.set("totalSize", String(file.size));
+  finalizeFormData.set("totalChunks", String(totalChunks));
+
+  const finalizeResponse = await fetch("/api/admin/file-uploads", {
+    method: "POST",
+    body: finalizeFormData,
+  });
+  const finalizeJson = (await readJsonSafely(finalizeResponse)) as {
+    error?: string;
+    fileBlobKey?: string;
+    mimeType?: string;
+    fileSize?: number;
+  };
+
+  if (!finalizeResponse.ok || !finalizeJson.fileBlobKey) {
+    throw new Error(finalizeJson.error ?? "บันทึกไฟล์ที่อัปโหลดไม่สำเร็จ");
+  }
+
+  return {
+    updatedAt,
+    fileBlobKey: finalizeJson.fileBlobKey,
+    mimeType: finalizeJson.mimeType ?? file.type ?? "application/octet-stream",
+    fileSize: finalizeJson.fileSize ?? file.size,
+  };
 }
 
 function readFileAsDataUrl(file: File) {
@@ -210,9 +274,9 @@ export function AdminPageV2() {
       const documents: TournamentDocument[] = [];
 
       for (const file of files) {
-        const imageDataUrl = await readFileAsDataUrl(file);
+        const storedFile = await uploadFileToStorage(file, `tournament-${selectedDocumentKind}`);
         const title = file.name.replace(/\.[^.]+$/, "") || file.name;
-        const updatedAt = new Date().toISOString();
+        const updatedAt = storedFile.updatedAt;
 
         documents.push({
           id: `${selectedCategoryId}-${selectedRoundId}-${file.name}-${updatedAt}`,
@@ -221,7 +285,10 @@ export function AdminPageV2() {
           sourceFileName: file.name,
           updatedAt,
           contentText: file.name,
-          imageDataUrl,
+          imageDataUrl: null,
+          fileBlobKey: storedFile.fileBlobKey,
+          mimeType: storedFile.mimeType,
+          fileSize: storedFile.fileSize,
           parsedData: null,
         });
       }
@@ -282,8 +349,8 @@ export function AdminPageV2() {
     setStatus("");
 
     try {
-      const dataUrl = await readFileAsDataUrl(file);
-      const updatedAt = new Date().toISOString();
+      const storedFile = await uploadFileToStorage(file, `public-${kind}`);
+      const updatedAt = storedFile.updatedAt;
       const title = file.name.replace(/\.[^.]+$/, "") || getPublicDocumentKindLabel(kind);
 
       const response = await fetch("/api/admin/public-documents", {
@@ -295,7 +362,10 @@ export function AdminPageV2() {
             title,
             sourceFileName: file.name,
             updatedAt,
-            dataUrl,
+            dataUrl: null,
+            fileBlobKey: storedFile.fileBlobKey,
+            mimeType: storedFile.mimeType,
+            fileSize: storedFile.fileSize,
           } satisfies PublicDocument,
         }),
       });
@@ -680,7 +750,7 @@ export function AdminPageV2() {
                   {getPublicDocumentKindLabel(kind.id)}
                 </h3>
                 <p className="mt-3 text-sm leading-6 text-violet-700/75">
-                  อัปโหลดได้เฉพาะไฟล์ `.pdf` และไฟล์ใหม่จะถูกใช้แทนไฟล์เดิมของหัวข้อนี้
+                  อัปโหลดได้เฉพาะไฟล์ `.pdf` และระบบจะส่งไฟล์เป็นหลายช่วงเพื่อรองรับไฟล์ใหญ่ขึ้น
                 </p>
 
                 <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-violet-300 bg-violet-50/40 px-4 py-6 text-center transition hover:border-violet-500 hover:bg-white">
@@ -705,7 +775,7 @@ export function AdminPageV2() {
                     </p>
                     <div className="mt-4 flex flex-wrap gap-3">
                       <a
-                        href={document.dataUrl}
+                        href={getPublicDocumentDownloadUrl(document) ?? "#"}
                         download={document.sourceFileName}
                         className="rounded-full border border-violet-200 px-4 py-2 text-sm font-semibold text-violet-800 transition hover:bg-white"
                       >

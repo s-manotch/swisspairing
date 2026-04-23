@@ -20,8 +20,14 @@ function isValidPublicDocument(document: PublicDocument) {
       document.title &&
       document.sourceFileName &&
       document.updatedAt &&
-      typeof document.dataUrl === "string" &&
-      document.dataUrl.startsWith("data:application/pdf"),
+      ((typeof document.dataUrl === "string" && document.dataUrl.startsWith("data:application/pdf")) ||
+        typeof document.fileBlobKey === "string") &&
+      (document.mimeType === undefined ||
+        document.mimeType === null ||
+        document.mimeType === "application/pdf") &&
+      (document.fileSize === undefined ||
+        document.fileSize === null ||
+        typeof document.fileSize === "number"),
   );
 }
 

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
+  getPublicDocumentDownloadUrl,
+  getTournamentDocumentAssetUrl,
   formatAlignedTextBlock,
   getCategoryDocumentsForRound,
   getPublicDocumentKindLabel,
@@ -14,6 +16,7 @@ import {
   parseTournamentStandingsFromText,
   publicDocumentKinds,
   splitTournamentPerson,
+  hasTournamentDocumentImage,
   type Match,
   type PublicDocument,
   type StandingEntry,
@@ -289,7 +292,7 @@ export function ResultsBrowserV3({
                     </p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       <a
-                        href={document.dataUrl}
+                        href={getPublicDocumentDownloadUrl(document) ?? "#"}
                         download={document.sourceFileName}
                         className="rounded-full border border-violet-700 bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-800"
                       >
@@ -436,7 +439,7 @@ export function ResultsBrowserV3({
               const documents = getCategoryDocumentsForRound(activeCategory, round.id);
               const parsedResult = documents.find((document) => document.parsedData)?.parsedData ?? null;
               const imageResults = documents.filter(
-                (document) => document.kind === "results" && document.imageDataUrl,
+                (document) => document.kind === "results" && hasTournamentDocumentImage(document),
               );
               const textResults = documents.filter(
                 (document) => document.kind === "results" && !document.parsedData,
@@ -483,7 +486,7 @@ export function ResultsBrowserV3({
                             <p className="text-sm text-violet-700/75">{document.sourceFileName}</p>
                           </div>
                           <DocumentImagePreview
-                            src={document.imageDataUrl!}
+                            src={getTournamentDocumentAssetUrl(document)!}
                             alt={document.title}
                             className="rounded-t-none border-x-0 border-b-0"
                           />
@@ -515,9 +518,9 @@ export function ResultsBrowserV3({
                               <p className="text-sm text-violet-700/75">{document.sourceFileName}</p>
                             </div>
 
-                            {document.imageDataUrl ? (
+                            {hasTournamentDocumentImage(document) ? (
                               <DocumentImagePreview
-                                src={document.imageDataUrl}
+                                src={getTournamentDocumentAssetUrl(document)!}
                                 alt={document.title}
                                 className="rounded-t-none border-x-0 border-b-0"
                               />
@@ -581,9 +584,9 @@ export function ResultsBrowserV3({
                           <p className="text-sm text-violet-700/75">{document.sourceFileName}</p>
                         </div>
 
-                        {document.imageDataUrl ? (
+                        {hasTournamentDocumentImage(document) ? (
                           <DocumentImagePreview
-                            src={document.imageDataUrl}
+                            src={getTournamentDocumentAssetUrl(document)!}
                             alt={document.title}
                             className="rounded-t-none border-x-0 border-b-0"
                           />
@@ -620,12 +623,12 @@ export function ResultsBrowserV3({
                       key={document.id}
                       className={[
                         "bg-white/80 p-0",
-                        document.imageDataUrl ? "" : "border border-violet-100",
+                        hasTournamentDocumentImage(document) ? "" : "border border-violet-100",
                       ].join(" ")}
                     >
-                      {document.imageDataUrl ? (
+                      {hasTournamentDocumentImage(document) ? (
                         <DocumentImagePreview
-                          src={document.imageDataUrl}
+                          src={getTournamentDocumentAssetUrl(document)!}
                           alt={document.title}
                           className="rounded-none border-0 shadow-none"
                           imageClassName="rounded-none"
@@ -674,9 +677,9 @@ export function ResultsBrowserV3({
                     <p className="mt-2 text-sm text-violet-700/75">
                       {document.sourceFileName} • {new Date(document.updatedAt).toLocaleString("th-TH")}
                     </p>
-                    {document.imageDataUrl ? (
+                    {hasTournamentDocumentImage(document) ? (
                       <DocumentImagePreview
-                        src={document.imageDataUrl}
+                        src={getTournamentDocumentAssetUrl(document)!}
                         alt={document.title}
                         className="-mx-5 -mb-5 mt-4"
                       />

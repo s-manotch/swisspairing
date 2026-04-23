@@ -1,7 +1,7 @@
 ﻿import "server-only";
 
 import { getStore } from "@netlify/blobs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
   getRoundIdFromRoundNumber,
@@ -20,10 +20,24 @@ import {
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "current-results.json");
 const publicDocumentsFile = path.join(dataDir, "public-documents.json");
+const uploadsDir = path.join(dataDir, "uploads");
 const defaultCategoryId: TournamentCategoryId = "type-1";
 const blobStoreName = "testswiss-data";
 const resultsBlobKey = "current-results";
 const publicDocumentsBlobKey = "public-documents";
+const uploadChunkPrefix = "_uploads";
+
+type StoredFileMetadata = {
+  contentType: string;
+  fileName: string;
+  fileSize: number;
+  updatedAt: string;
+};
+
+function toArrayBuffer(input: ArrayBuffer | Uint8Array) {
+  const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+  return Uint8Array.from(bytes).buffer;
+}
 
 function isStoredTournamentData(value: unknown): value is StoredTournamentData {
   if (!value || typeof value !== "object") {
@@ -57,6 +71,11 @@ function isTournamentDocument(value: unknown): value is TournamentDocument {
       payload.updatedAt &&
       typeof payload.contentText === "string" &&
       ("imageDataUrl" in payload ? typeof payload.imageDataUrl === "string" || payload.imageDataUrl === null : true) &&
+      ("fileBlobKey" in payload ? typeof payload.fileBlobKey === "string" || payload.fileBlobKey === null : true) &&
+      ("mimeType" in payload ? typeof payload.mimeType === "string" || payload.mimeType === null : true) &&
+      ("fileSize" in payload
+        ? typeof payload.fileSize === "number" || payload.fileSize === null
+        : true) &&
       "parsedData" in payload,
   );
 }
@@ -109,7 +128,12 @@ function isPublicDocument(value: unknown): value is PublicDocument {
       payload.title &&
       payload.sourceFileName &&
       payload.updatedAt &&
-      typeof payload.dataUrl === "string",
+      ("dataUrl" in payload ? typeof payload.dataUrl === "string" || payload.dataUrl === null : true) &&
+      ("fileBlobKey" in payload ? typeof payload.fileBlobKey === "string" || payload.fileBlobKey === null : true) &&
+      ("mimeType" in payload ? typeof payload.mimeType === "string" || payload.mimeType === null : true) &&
+      ("fileSize" in payload
+        ? typeof payload.fileSize === "number" || payload.fileSize === null
+        : true),
   );
 }
 
@@ -188,6 +212,9 @@ function migrateLegacyData(data: StoredTournamentData): TournamentCategoryRecord
               .map((match) => `${match.board}. ${match.leftName} ${match.result} ${match.rightName}`)
               .join("\n"),
             imageDataUrl: null,
+            fileBlobKey: null,
+            mimeType: null,
+            fileSize: null,
             parsedData: data,
           },
         ],
@@ -248,6 +275,109 @@ function getPersistentStore() {
   }
 }
 
+function normalizeBlobKey(blobKey: string) {
+  const parts = blobKey.split("/").filter(Boolean);
+
+  if (!parts.length || parts.some((part) => part === ".." || part.includes("\\") || part.includes(":"))) {
+    throw new Error("Stored file key is invalid");
+  }
+
+  return parts.join("/");
+}
+
+function getLocalUploadPath(blobKey: string) {
+  return path.join(uploadsDir, ...normalizeBlobKey(blobKey).split("/"));
+}
+
+function getLocalUploadMetadataPath(blobKey: string) {
+  return `${getLocalUploadPath(blobKey)}.meta.json`;
+}
+
+async function writeStoredFile(
+  blobKey: string,
+  data: ArrayBuffer | Uint8Array,
+  metadata: StoredFileMetadata,
+) {
+  const normalizedKey = normalizeBlobKey(blobKey);
+  const store = getPersistentStore();
+
+  if (store) {
+    try {
+      await store.set(normalizedKey, toArrayBuffer(data), { metadata });
+      return;
+    } catch {
+      // Fall back to local writes only when Blob storage is unavailable.
+    }
+  }
+
+  ensureWritableFallbackAvailable();
+
+  const filePath = getLocalUploadPath(normalizedKey);
+  await mkdir(path.dirname(filePath), { recursive: true });
+  await writeFile(filePath, Buffer.from(data instanceof Uint8Array ? data : new Uint8Array(data)));
+  await writeFile(getLocalUploadMetadataPath(normalizedKey), JSON.stringify(metadata, null, 2), "utf8");
+}
+
+async function readStoredFile(blobKey: string) {
+  const normalizedKey = normalizeBlobKey(blobKey);
+  const store = getPersistentStore();
+
+  if (store) {
+    try {
+      const [data, meta] = await Promise.all([
+        store.get(normalizedKey, { type: "arrayBuffer" }),
+        store.getMetadata(normalizedKey),
+      ]);
+
+      if (data && meta?.metadata) {
+        return {
+          data,
+          metadata: meta.metadata as StoredFileMetadata,
+        };
+      }
+    } catch {
+      // Fall back to local reads outside Netlify Blob-enabled environments.
+    }
+  }
+
+  try {
+    const filePath = getLocalUploadPath(normalizedKey);
+    const [fileBuffer, rawMetadata] = await Promise.all([
+      readFile(filePath),
+      readFile(getLocalUploadMetadataPath(normalizedKey), "utf8"),
+    ]);
+
+    return {
+      data: Uint8Array.from(fileBuffer).buffer,
+      metadata: JSON.parse(rawMetadata) as StoredFileMetadata,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function deleteStoredFile(blobKey: string) {
+  const normalizedKey = normalizeBlobKey(blobKey);
+  const store = getPersistentStore();
+
+  if (store) {
+    try {
+      await store.delete(normalizedKey);
+      return;
+    } catch {
+      // Fall back to local deletes only when Blob storage is unavailable.
+    }
+  }
+
+  ensureWritableFallbackAvailable();
+
+  const filePath = getLocalUploadPath(normalizedKey);
+  await Promise.all([
+    unlink(filePath).catch(() => undefined),
+    unlink(getLocalUploadMetadataPath(normalizedKey)).catch(() => undefined),
+  ]);
+}
+
 async function readLocalResultsFile() {
   try {
     const raw = await readFile(dataFile, "utf8");
@@ -296,6 +426,61 @@ function ensureWritableFallbackAvailable() {
   if (isRunningOnNetlify()) {
     throw new Error("Netlify Blob storage is not available in this environment");
   }
+}
+
+function getUploadChunkBlobKey(uploadId: string, chunkIndex: number) {
+  return `${uploadChunkPrefix}/${normalizeBlobKey(uploadId)}/${String(chunkIndex).padStart(5, "0")}`;
+}
+
+export async function writeUploadChunk(
+  uploadId: string,
+  chunkIndex: number,
+  chunk: ArrayBuffer,
+  metadata: StoredFileMetadata,
+) {
+  await writeStoredFile(getUploadChunkBlobKey(uploadId, chunkIndex), chunk, metadata);
+}
+
+export async function finalizeChunkedUpload(options: {
+  uploadId: string;
+  totalChunks: number;
+  finalBlobKey: string;
+  metadata: StoredFileMetadata;
+}) {
+  const chunks: Uint8Array[] = [];
+  let totalLength = 0;
+
+  for (let index = 0; index < options.totalChunks; index += 1) {
+    const chunk = await readStoredFile(getUploadChunkBlobKey(options.uploadId, index));
+
+    if (!chunk) {
+      throw new Error("ไม่พบข้อมูลไฟล์บางส่วน กรุณาอัปโหลดใหม่อีกครั้ง");
+    }
+
+    const bytes = new Uint8Array(chunk.data);
+    chunks.push(bytes);
+    totalLength += bytes.byteLength;
+  }
+
+  const merged = new Uint8Array(totalLength);
+  let offset = 0;
+
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  await writeStoredFile(options.finalBlobKey, merged, options.metadata);
+
+  await Promise.all(
+    Array.from({ length: options.totalChunks }, (_, index) =>
+      deleteStoredFile(getUploadChunkBlobKey(options.uploadId, index)).catch(() => undefined),
+    ),
+  );
+}
+
+export async function readStoredAsset(blobKey: string) {
+  return readStoredFile(blobKey);
 }
 
 export async function readTournamentResults() {
@@ -429,8 +614,9 @@ export async function writePublicDocument(document: PublicDocument) {
 
 export async function deletePublicDocument(kind: PublicDocumentKind) {
   const currentDocuments = await readPublicDocuments();
+  const currentDocument = currentDocuments[kind];
 
-  if (!currentDocuments[kind]) {
+  if (!currentDocument) {
     return false;
   }
 
@@ -442,6 +628,9 @@ export async function deletePublicDocument(kind: PublicDocumentKind) {
   if (store) {
     try {
       await store.setJSON(publicDocumentsBlobKey, nextDocuments);
+      if (currentDocument.fileBlobKey) {
+        await deleteStoredFile(currentDocument.fileBlobKey).catch(() => undefined);
+      }
       return true;
     } catch {
       // Fall back to local writes only when Blob storage is unavailable.
@@ -450,6 +639,9 @@ export async function deletePublicDocument(kind: PublicDocumentKind) {
 
   ensureWritableFallbackAvailable();
   await writeLocalPublicDocumentsFile(nextDocuments);
+  if (currentDocument.fileBlobKey) {
+    await deleteStoredFile(currentDocument.fileBlobKey).catch(() => undefined);
+  }
   return true;
 }
 
@@ -468,6 +660,7 @@ export async function deleteTournamentDocument(
   const nextSharedDocuments = currentCategory.sharedDocuments.filter(
     (document) => document.id !== documentId,
   );
+  const deletedSharedDocument = currentCategory.sharedDocuments.find((document) => document.id === documentId) ?? null;
   const currentRound = currentCategory.rounds[roundId];
   const nextRound =
     currentRound
@@ -476,6 +669,9 @@ export async function deleteTournamentDocument(
           documents: currentRound.documents.filter((document) => document.id !== documentId),
         }
       : null;
+  const deletedRoundDocument =
+    currentRound?.documents.find((document) => document.id === documentId) ?? null;
+  const deletedDocument = deletedSharedDocument ?? deletedRoundDocument;
 
   const sharedChanged = nextSharedDocuments.length !== currentCategory.sharedDocuments.length;
   const roundChanged = currentRound ? nextRound!.documents.length !== currentRound.documents.length : false;
@@ -501,6 +697,9 @@ export async function deleteTournamentDocument(
   if (store) {
     try {
       await store.setJSON(resultsBlobKey, nextResults);
+      if (deletedDocument?.fileBlobKey) {
+        await deleteStoredFile(deletedDocument.fileBlobKey).catch(() => undefined);
+      }
       return true;
     } catch {
       // Fall back to local writes only when Blob storage is unavailable.
@@ -509,5 +708,8 @@ export async function deleteTournamentDocument(
 
   ensureWritableFallbackAvailable();
   await writeLocalResultsFile(nextResults);
+  if (deletedDocument?.fileBlobKey) {
+    await deleteStoredFile(deletedDocument.fileBlobKey).catch(() => undefined);
+  }
   return true;
 }

@@ -63,6 +63,30 @@ export async function POST(request: Request) {
     !payload.documents.every((document) => isValidDocument(document)) ||
     !payload.documents.every((document) => document.kind === payload.documentKind) ||
     !payload.documents.every(
+      (document) =>
+        document.imageDataUrl === undefined ||
+        typeof document.imageDataUrl === "string" ||
+        document.imageDataUrl === null,
+    ) ||
+    !payload.documents.every(
+      (document) =>
+        document.fileBlobKey === undefined ||
+        typeof document.fileBlobKey === "string" ||
+        document.fileBlobKey === null,
+    ) ||
+    !payload.documents.every(
+      (document) =>
+        document.mimeType === undefined ||
+        typeof document.mimeType === "string" ||
+        document.mimeType === null,
+    ) ||
+    !payload.documents.every(
+      (document) =>
+        document.fileSize === undefined ||
+        typeof document.fileSize === "number" ||
+        document.fileSize === null,
+    ) ||
+    !payload.documents.every(
       (document) => !document.parsedData || isValidPayload(document.parsedData as StoredTournamentData),
     )
   ) {

@@ -81,7 +81,10 @@ export type TournamentDocument = {
   sourceFileName: string;
   updatedAt: string;
   contentText: string;
-  imageDataUrl: string | null;
+  imageDataUrl?: string | null;
+  fileBlobKey?: string | null;
+  mimeType?: string | null;
+  fileSize?: number | null;
   parsedData: StoredTournamentData | null;
 };
 
@@ -90,7 +93,10 @@ export type PublicDocument = {
   title: string;
   sourceFileName: string;
   updatedAt: string;
-  dataUrl: string;
+  dataUrl?: string | null;
+  fileBlobKey?: string | null;
+  mimeType?: string | null;
+  fileSize?: number | null;
 };
 
 export type TournamentRoundRecord = {
@@ -173,6 +179,57 @@ export function getCategoryDocumentsForRound(
 
   const roundDocuments = category.rounds[roundId]?.documents ?? [];
   return [...category.sharedDocuments, ...roundDocuments];
+}
+
+export function buildStoredFileUrl(
+  blobKey: string,
+  options?: {
+    download?: boolean;
+    fileName?: string;
+  },
+) {
+  const searchParams = new URLSearchParams({ key: blobKey });
+
+  if (options?.download) {
+    searchParams.set("download", "1");
+  }
+
+  if (options?.fileName) {
+    searchParams.set("filename", options.fileName);
+  }
+
+  return `/api/files?${searchParams.toString()}`;
+}
+
+export function getTournamentDocumentAssetUrl(
+  document: Pick<TournamentDocument, "fileBlobKey" | "imageDataUrl">,
+) {
+  if (document.fileBlobKey) {
+    return buildStoredFileUrl(document.fileBlobKey);
+  }
+
+  return document.imageDataUrl ?? null;
+}
+
+export function getPublicDocumentDownloadUrl(
+  document: Pick<PublicDocument, "fileBlobKey" | "dataUrl" | "sourceFileName">,
+) {
+  if (document.fileBlobKey) {
+    return buildStoredFileUrl(document.fileBlobKey, {
+      download: true,
+      fileName: document.sourceFileName,
+    });
+  }
+
+  return document.dataUrl ?? null;
+}
+
+export function hasTournamentDocumentImage(
+  document: Pick<TournamentDocument, "fileBlobKey" | "imageDataUrl" | "mimeType">,
+) {
+  return Boolean(
+    document.imageDataUrl || (document.fileBlobKey && document.mimeType?.startsWith("image/")),
+  );
 }
 
 function normalizeBuffer(input: ArrayBuffer | Uint8Array) {
