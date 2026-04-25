@@ -25,3 +25,21 @@ export function isAdminAuthorized(sessionValue?: string) {
   const expected = getAdminSessionToken();
   return Boolean(expected) && sessionValue === expected;
 }
+
+export function shouldUseSecureAdminCookie(request: Request) {
+  const forwardedProto = request.headers
+    .get("x-forwarded-proto")
+    ?.split(",")[0]
+    ?.trim()
+    .toLowerCase();
+
+  if (forwardedProto) {
+    return forwardedProto === "https";
+  }
+
+  try {
+    return new URL(request.url).protocol === "https:";
+  } catch {
+    return false;
+  }
+}

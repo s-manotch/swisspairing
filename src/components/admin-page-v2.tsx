@@ -182,6 +182,7 @@ export function AdminPageV2() {
     const response = await fetch("/api/admin/session", { cache: "no-store" });
     const json = (await response.json()) as SessionResponse;
     setSession(json);
+    return json;
   }
 
   async function loadResults() {
@@ -246,7 +247,14 @@ export function AdminPageV2() {
 
     setPassword("");
     setStatus("");
-    await loadSession();
+    const nextSession = await loadSession();
+
+    if (!nextSession.authenticated) {
+      setLoginError(
+        "เข้าสู่ระบบสำเร็จแล้ว แต่เบราว์เซอร์ยังไม่บันทึก session กรุณาตรวจสอบว่าเข้าเว็บผ่าน HTTP/HTTPS ตรงกับการตั้งค่า proxy",
+      );
+    }
+
     setIsBusy(false);
   }
 

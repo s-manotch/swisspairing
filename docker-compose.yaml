@@ -1,0 +1,14 @@
+services:
+  next-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: next-app
+    ports:
+      - "7000:3000"
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped

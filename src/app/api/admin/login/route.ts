@@ -1,5 +1,11 @@
 ﻿import { NextResponse } from "next/server";
-import { adminSessionCookie, getAdminPassword, getAdminSessionToken, isAdminConfigured } from "@/lib/admin-auth";
+import {
+  adminSessionCookie,
+  getAdminPassword,
+  getAdminSessionToken,
+  isAdminConfigured,
+  shouldUseSecureAdminCookie,
+} from "@/lib/admin-auth";
 
 export async function POST(request: Request) {
   if (!isAdminConfigured()) {
@@ -21,7 +27,7 @@ export async function POST(request: Request) {
     value: getAdminSessionToken(),
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureAdminCookie(request),
     path: "/",
   });
 
