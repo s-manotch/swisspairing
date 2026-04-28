@@ -83,8 +83,25 @@ async function readJsonSafely(response: Response) {
   }
 }
 
+function createUploadId() {
+  const browserCrypto = globalThis.crypto;
+  const timestamp = Date.now();
+
+  if (typeof browserCrypto?.randomUUID === "function") {
+    return `${timestamp}-${browserCrypto.randomUUID()}`;
+  }
+
+  if (typeof browserCrypto?.getRandomValues === "function") {
+    const values = new Uint32Array(4);
+    browserCrypto.getRandomValues(values);
+    return `${timestamp}-${Array.from(values, (value) => value.toString(36)).join("-")}`;
+  }
+
+  return `${timestamp}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+}
+
 async function uploadFileToStorage(file: File, storageGroup: string) {
-  const uploadId = `${Date.now()}-${crypto.randomUUID()}`;
+  const uploadId = createUploadId();
   const updatedAt = new Date().toISOString();
   const totalChunks = Math.max(1, Math.ceil(file.size / uploadChunkSize));
 
@@ -142,24 +159,6 @@ async function uploadFileToStorage(file: File, storageGroup: string) {
     mimeType: finalizeJson.mimeType ?? file.type ?? "application/octet-stream",
     fileSize: finalizeJson.fileSize ?? file.size,
   };
-}
-
-function readFileAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-        return;
-      }
-
-      reject(new Error("ไม่สามารถอ่านไฟล์รูปภาพได้"));
-    };
-
-    reader.onerror = () => reject(new Error("ไม่สามารถอ่านไฟล์รูปภาพได้"));
-    reader.readAsDataURL(file);
-  });
 }
 
 export function AdminPageV2() {
